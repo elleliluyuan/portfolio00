@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>李鹿原 · 资深产品设计师</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #18180f;
+  --paper: #f7f5f0;
+  --muted: #8c8a83;
+  --accent: #b85c2c;
+  --accent-light: #f2ece5;
+  --border: #e2dfd8;
+  --white: #ffffff;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Outfit', system-ui, sans-serif;
+  --nav-h: 64px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--paper); color: var(--ink); font-weight: 300; -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: var(--nav-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(247,245,240,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: var(--serif); font-size: 20px; font-weight: 400; letter-spacing: 0.02em; text-decoration: none; color: var(--ink); }
+.nav-right { display: flex; align-items: center; gap: 32px; }
+.nav-links { display: flex; gap: 6px; list-style: none; }
+.nav-links a {
+  font-size: 13px; font-weight: 400; letter-spacing: 0.04em;
+  color: var(--muted); text-decoration: none;
+  padding: 6px 14px; border-radius: 20px;
+  transition: background .2s, color .2s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-links a.active { background: var(--ink); color: var(--white); }
+.lang-btn { font-size: 12px; padding: 5px 12px; border: 1px solid var(--border); border-radius: 20px; background: none; cursor: pointer; color: var(--muted); transition: all .2s; }
+.lang-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ── SECTIONS ── */
+.section { padding: calc(var(--nav-h) + 72px) 48px 100px; min-height: 100vh; }
+.section-divider { height: 1px; background: var(--border); margin: 0 48px; }
+
+/* ── HOME ── */
+#home { padding-bottom: 0; min-height: unset; }
+.hero { padding: 72px 0; position: relative; }
+.hero::before {
+  content: ''; position: absolute; top: 0; right: -48px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(184,92,44,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; opacity: 0; animation: fadeUp .6s .1s forwards; }
+.hero-title { font-family: var(--serif); font-size: clamp(52px, 7vw, 92px); font-weight: 300; line-height: 1.05; max-width: 800px; margin-bottom: 28px; opacity: 0; animation: fadeUp .7s .2s forwards; }
+.hero-title em { font-style: italic; color: var(--accent); }
+.hero-desc { font-size: 16px; font-weight: 300; color: var(--muted); max-width: 500px; line-height: 1.8; margin-bottom: 52px; opacity: 0; animation: fadeUp .7s .35s forwards; }
+.hero-stats { display: flex; gap: 0; opacity: 0; animation: fadeUp .7s .5s forwards; border-top: 1px solid var(--border); padding-top: 36px; flex-wrap: wrap; }
+.stat-item { padding-right: 40px; margin-right: 40px; border-right: 1px solid var(--border); margin-bottom: 16px; }
+.stat-item:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+.stat-num { font-family: var(--serif); font-size: 38px; font-weight: 300; line-height: 1; display: block; }
+.stat-label { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+.stat-award { font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.55; }
+.stat-award strong { color: var(--ink); font-weight: 400; display: block; }
+
+/* BRANDS TICKER */
+.brands-ticker { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; position: relative; margin: 0 -48px; }
+.brands-ticker::before, .brands-ticker::after { content: ''; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 2; pointer-events: none; }
+.brands-ticker::before { left: 0; background: linear-gradient(to right, var(--paper), transparent); }
+.brands-ticker::after  { right: 0; background: linear-gradient(to left,  var(--paper), transparent); }
+.ticker-track { display: flex; width: max-content; animation: ticker 24s linear infinite; }
+.ticker-track:hover { animation-play-state: paused; }
+.ticker-set { display: flex; align-items: center; }
+.brand-item { display: flex; align-items: center; padding: 15px 40px; border-right: 1px solid var(--border); white-space: nowrap; }
+.brand-logo-text { font-family: var(--serif); font-size: 17px; font-weight: 300; letter-spacing: 0.06em; color: var(--muted); transition: color .2s; }
+.brand-item:hover .brand-logo-text { color: var(--ink); }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── WORK ── */
+#work { background: var(--paper); }
+.work-header { margin-bottom: 32px; }
+.work-header h2 { font-family: var(--serif); font-size: 44px; font-weight: 300; margin-bottom: 6px; }
+.work-header p { font-size: 14px; color: var(--muted); }
+.filter-bar { margin-bottom: 32px; display: flex; flex-direction: column; gap: 12px; }
+.filter-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.filter-group-label { font-size: 11px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); width: 56px; flex-shrink: 0; }
+.filter-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+.tag { font-size: 12px; font-weight: 400; padding: 5px 14px; border: 1px solid var(--border); border-radius: 20px; background: none; color: var(--muted); cursor: pointer; transition: all .18s; }
+.tag:hover { border-color: var(--ink); color: var(--ink); }
+.tag.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.filter-divider { height: 1px; background: var(--border); }
+
+/* MASONRY */
+.masonry-grid { columns: 3; column-gap: 20px; }
+.masonry-card { break-inside: avoid; margin-bottom: 20px; background: var(--white); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: transform .25s, box-shadow .25s; animation: fadeIn .35s ease forwards; display: block; }
+.masonry-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.08); }
+.card-thumb { height: 180px; overflow: hidden; }
+.card-thumb-bg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; transition: transform .3s; }
+.masonry-card:hover .card-thumb-bg { transform: scale(1.06); }
+.card-body { padding: 18px 20px 20px; }
+.card-tags-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 9px; }
+.card-tag { font-size: 10px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; background: var(--accent-light); color: var(--accent); }
+.card-title { font-family: var(--serif); font-size: 22px; font-weight: 400; line-height: 1.2; margin-bottom: 8px; }
+.card-desc { font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.65; margin-bottom: 14px; }
+.card-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); }
+.card-meta-left { display: flex; gap: 7px; flex-wrap: wrap; }
+.meta-pill { font-size: 11px; font-weight: 300; color: var(--muted); padding: 3px 10px; border: 1px solid var(--border); border-radius: 20px; }
+.card-arrow { font-size: 16px; color: var(--muted); transition: transform .2s, color .2s; flex-shrink: 0; }
+.masonry-card:hover .card-arrow { transform: translateX(4px); color: var(--ink); }
+.empty-state { text-align: center; padding: 80px 0; color: var(--muted); }
+.empty-icon { font-size: 36px; margin-bottom: 12px; }
+.empty-text { font-size: 14px; }
+
+/* ── ABOUT ── */
+#about { background: var(--paper); }
+.about-grid { display: grid; grid-template-columns: 200px 1fr; gap: 64px; align-items: start; }
+.about-avatar { width: 100%; aspect-ratio: 3/4; background: var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 24px; position: relative; }
+.about-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.about-contact-links { display: flex; flex-direction: column; gap: 10px; }
+.alink { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 300; color: var(--muted); text-decoration: none; transition: color .2s; word-break: break-all; }
+.alink:hover { color: var(--ink); }
+.about-name { font-family: var(--serif); font-size: 48px; font-weight: 300; line-height: 1.1; margin-bottom: 6px; }
+.about-role { font-size: 13px; font-weight: 300; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 28px; }
+.about-bio { font-size: 15px; font-weight: 300; line-height: 1.85; color: #3a3a35; margin-bottom: 40px; }
+.about-section-title { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 36px; }
+.skill-item { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 300; }
+.skill-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.tools-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
+.tool-tag { font-size: 12px; font-weight: 300; color: var(--muted); padding: 4px 12px; border: 1px solid var(--border); border-radius: 20px; }
+.exp-list { display: flex; flex-direction: column; gap: 20px; margin-bottom: 36px; }
+.exp-item { display: flex; gap: 20px; }
+.exp-year { font-size: 12px; font-weight: 300; color: var(--muted); width: 80px; flex-shrink: 0; padding-top: 2px; line-height: 1.5; }
+.exp-right {}
+.exp-role { font-size: 14px; font-weight: 400; margin-bottom: 2px; }
+.exp-company { font-size: 13px; font-weight: 300; color: var(--muted); margin-bottom: 4px; }
+.exp-desc { font-size: 12px; font-weight: 300; color: var(--muted); line-height: 1.6; }
+.edu-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px; }
+.edu-item { display: flex; gap: 20px; }
+.edu-year { font-size: 12px; font-weight: 300; color: var(--muted); width: 80px; flex-shrink: 0; padding-top: 2px; }
+.edu-school { font-size: 14px; font-weight: 400; margin-bottom: 2px; }
+.edu-major { font-size: 13px; font-weight: 300; color: var(--muted); }
+.awards-list { display: flex; flex-direction: column; gap: 10px; }
+.award-item { display: flex; align-items: center; gap: 14px; padding: 16px 18px; background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; }
+.award-icon { font-size: 20px; }
+.award-name { font-size: 14px; font-weight: 400; margin-bottom: 2px; }
+.award-year { font-size: 12px; font-weight: 300; color: var(--muted); }
+
+/* ── CONTACT ── */
+#contact { background: var(--paper); }
+.contact-inner { max-width: 560px; }
+.contact-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+.contact-title { font-family: var(--serif); font-size: 52px; font-weight: 300; line-height: 1.1; margin-bottom: 20px; }
+.contact-desc { font-size: 15px; font-weight: 300; line-height: 1.8; color: var(--muted); margin-bottom: 48px; }
+.contact-methods { display: flex; flex-direction: column; }
+.contact-method { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--ink); transition: padding-left .2s; }
+.contact-method:first-child { border-top: 1px solid var(--border); }
+.contact-method:hover { padding-left: 8px; }
+.contact-method-left { display: flex; align-items: center; gap: 14px; }
+.contact-icon { width: 36px; height: 36px; background: var(--accent-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.contact-method-name { font-size: 15px; font-weight: 400; margin-bottom: 2px; }
+.contact-method-val { font-size: 13px; color: var(--muted); }
+.contact-arrow { font-size: 18px; color: var(--border); transition: color .2s; }
+.contact-method:hover .contact-arrow { color: var(--ink); }
+
+/* ── FOOTER ── */
+footer { border-top: 1px solid var(--border); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; }
+footer p { font-size: 12px; font-weight: 300; color: var(--muted); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#home" data-zh="李鹿原" data-en="Elle Li">李鹿原</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#home"    data-zh="首页" data-en="Home">首页</a></li>
+      <li><a href="#work"    data-zh="作品" data-en="Work">作品</a></li>
+      <li><a href="#about"   data-zh="关于" data-en="About">关于</a></li>
+      <li><a href="#contact" data-zh="联系" data-en="Contact">联系</a></li>
+    </ul>
+    <button class="lang-btn" onclick="toggleLang()">EN</button>
+  </div>
+</nav>
+
+<!-- ══════ HOME ══════ -->
+<div id="home" class="section" style="padding-bottom:0; min-height:unset;">
+  <div class="hero">
+    <div class="hero-eyebrow" data-zh="资深产品设计师 · 6年经验" data-en="Senior Product Designer · 6 Years">资深产品设计师 · 6年经验</div>
+    <h1 class="hero-title" data-zh="用研究驱动设计，<br>让产品<em>真正好用</em>" data-en="Research-Driven Design<br>That Makes Products <em>Work</em>">用研究驱动设计，<br>让产品<em>真正好用</em></h1>
+    <p class="hero-desc" data-zh="专注于金融、汽车、医疗、消费等领域的全流程体验设计，善于通过用户研究与数据洞察推动产品易用性与转化效率提升。毕业于加州艺术学院，具备国际化设计视野。" data-en="Full-cycle experience design across finance, automotive, healthcare and consumer products. I translate user research and data into measurable improvements in usability and conversion. MFA from California College of the Arts.">专注于金融、汽车、医疗、消费等领域的全流程体验设计，善于通过用户研究与数据洞察推动产品易用性与转化效率提升。毕业于加州艺术学院，具备国际化设计视野。</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num">6+</span>
+        <span class="stat-label" data-zh="年设计经验" data-en="Years Exp.">年设计经验</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">4</span>
+        <span class="stat-label" data-zh="行业领域" data-en="Industries">行业领域</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">IELTS</span>
+        <span class="stat-label" data-zh="7.5 · 英文流利" data-en="7.5 · Fluent English">7.5 · 英文流利</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" style="font-size:24px;margin-bottom:6px">🏆×2</span>
+        <span class="stat-award" data-zh="<strong>UX Design Awards</strong>提名 × 2" data-en="<strong>UX Design Awards</strong>Nominated × 2"><strong>UX Design Awards</strong>提名 × 2</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="brands-ticker">
+    <div class="ticker-track">
+      <div class="ticker-set">
+        <div class="brand-item"><span class="brand-logo-text">建设银行</span></div>
+        <div class="brand-item"><span class="brand-logo-text">宁波银行</span></div>
+        <div class="brand-item"><span class="brand-logo-text">浦发银行</span></div>
+        <div class="brand-item"><span class="brand-logo-text">山东城商行联盟</span></div>
+        <div class="brand-item"><span class="brand-logo-text">极氪汽车</span></div>
+        <div class="brand-item"><span class="brand-logo-text">全国工会</span></div>
+        <div class="brand-item"><span class="brand-logo-text">Oxford Arts Centre</span></div>
+        <div class="brand-item"><span class="brand-logo-text">Verynice.co</span></div>
+      </div>
+      <div class="ticker-set" aria-hidden="true">
+        <div class="brand-item"><span class="brand-logo-text">建设银行</span></div>
+        <div class="brand-item"><span class="brand-logo-text">宁波银行</span></div>
+        <div class="brand-item"><span class="brand-logo-text">浦发银行</span></div>
+        <div class="brand-item"><span class="brand-logo-text">山东城商行联盟</span></div>
+        <div class="brand-item"><span class="brand-logo-text">极氪汽车</span></div>
+        <div class="brand-item"><span class="brand-logo-text">全国工会</span></div>
+        <div class="brand-item"><span class="brand-logo-text">Oxford Arts Centre</span></div>
+        <div class="brand-item"><span class="brand-logo-text">Verynice.co</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ WORK ══════ -->
+<div id="work" class="section">
+  <div class="work-header">
+    <h2 data-zh="作品集" data-en="Work">作品集</h2>
+    <p data-zh="按行业或设计技能筛选" data-en="Filter by industry or skill">按行业或设计技能筛选</p>
+  </div>
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-group-label" data-zh="行业" data-en="Industry">行业</span>
+      <div class="filter-tags">
+        <button class="tag active" data-filter="all"      data-group="industry" data-zh="全部"  data-en="All">全部</button>
+        <button class="tag"        data-filter="finance"  data-group="industry" data-zh="金融"  data-en="Finance">金融</button>
+        <button class="tag"        data-filter="auto"     data-group="industry" data-zh="汽车"  data-en="Auto">汽车</button>
+        <button class="tag"        data-filter="labor"    data-group="industry" data-zh="公共服务" data-en="Public">公共服务</button>
+        <button class="tag"        data-filter="culture"  data-group="industry" data-zh="文化艺术" data-en="Arts">文化艺术</button>
+      </div>
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <span class="filter-group-label" data-zh="技能" data-en="Skill">技能</span>
+      <div class="filter-tags">
+        <button class="tag active" data-filter="all"         data-group="skill" data-zh="全部"   data-en="All">全部</button>
+        <button class="tag"        data-filter="research"    data-group="skill" data-zh="用研"   data-en="Research">用研</button>
+        <button class="tag"        data-filter="strategy"    data-group="skill" data-zh="产品策略" data-en="Strategy">产品策略</button>
+        <button class="tag"        data-filter="ia"          data-group="skill" data-zh="信息架构" data-en="IA">信息架构</button>
+        <button class="tag"        data-filter="interaction" data-group="skill" data-zh="交互设计" data-en="Interaction">交互设计</button>
+        <button class="tag"        data-filter="visual"      data-group="skill" data-zh="视觉设计" data-en="Visual">视觉设计</button>
+      </div>
+    </div>
+  </div>
+  <div class="masonry-grid" id="masonry-grid"></div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════ ABOUT ══════ -->
+<div id="about" class="section">
+  <div class="about-grid">
+    <div>
+      <div class="about-avatar">
+        <img src="/mnt/user-data/uploads/李鹿原-体验设计简历.pdf" alt="李鹿原" onerror="this.parentElement.innerHTML='🧑‍🎨'">
+      </div>
+      <div class="about-contact-links">
+        <a href="mailto:elleliluyuan@gmail.com" class="alink">✉️&nbsp; elleliluyuan@gmail.com</a>
+        <a href="tel:15290870617" class="alink">📱&nbsp; 152-9087-0617</a>
+        <a href="#" class="alink">📄&nbsp; <span data-zh="下载简历 PDF" data-en="Download CV PDF">下载简历 PDF</span></a>
+      </div>
+    </div>
+    <div>
+      <div class="about-name" data-zh="李鹿原" data-en="Elle Li">李鹿原</div>
+      <div class="about-role" data-zh="Senior Product Designer" data-en="Senior Product Designer">Senior Product Designer</div>
+      <p class="about-bio" data-zh="6年全流程体验设计经验，现任职于大邦创新设计咨询公司（上海），服务过金融、汽车、医疗、消费等多个行业头部客户。善于将用户研究与数据洞察转化为可落地的设计策略，推动产品易用性与商业转化双向提升。<br><br>毕业于加州艺术学院（MFA 交互设计），曾就读于迈阿密大学（交互媒体研究，前5%荣誉学位）。英语工作流利，IELTS 7.5，具备国际化合作经验。" data-en="6 years of full-cycle experience design at Dabang Innovation Design Consulting (Shanghai), serving leading clients across finance, automotive, healthcare and consumer verticals. I bridge user research and data to land design strategy that improves both usability and business conversion.<br><br>MFA in Interaction Design from California College of the Arts. BA magna cum laude from Miami University. Fluent English (IELTS 7.5) with international collaboration experience.">6年全流程体验设计经验，现任职于大邦创新设计咨询公司（上海），服务过金融、汽车、医疗、消费等多个行业头部客户。善于将用户研究与数据洞察转化为可落地的设计策略，推动产品易用性与商业转化双向提升。<br><br>毕业于加州艺术学院（MFA 交互设计），曾就读于迈阿密大学（交互媒体研究，前5%荣誉学位）。英语工作流利，IELTS 7.5，具备国际化合作经验。</p>
+
+      <div class="about-section-title" data-zh="核心能力" data-en="Core Skills">核心能力</div>
+      <div class="skills-grid">
+        <div class="skill-item"><span class="skill-dot"></span><span data-zh="用户研究 · 可用性测试" data-en="User Research · Usability Testing">用户研究 · 可用性测试</span></div>
+        <div class="skill-item"><span class="skill-dot"></span><span data-zh="产品策略 · 服务设计" data-en="Product Strategy · Service Design">产品策略 · 服务设计</span></div>
+        <div class="skill-item"><span class="skill-dot"></span><span data-zh="信息架构设计" data-en="Information Architecture">信息架构设计</span></div>
+        <div class="skill-item"><span class="skill-dot"></span><span data-zh="UX 设计 · UI 设计" data-en="UX Design · UI Design">UX 设计 · UI 设计</span></div>
+      </div>
+
+      <div class="about-section-title" data-zh="工具" data-en="Tools">工具</div>
+      <div class="tools-row">
+        <span class="tool-tag">Figma</span>
+        <span class="tool-tag">Midjourney</span>
+        <span class="tool-tag">Cursor</span>
+        <span class="tool-tag">Axure</span>
+        <span class="tool-tag">Illustrator</span>
+        <span class="tool-tag">Photoshop</span>
+        <span class="tool-tag">After Effects</span>
+      </div>
+
+      <div class="about-section-title" data-zh="工作经历" data-en="Experience">工作经历</div>
+      <div class="exp-list">
+        <div class="exp-item">
+          <span class="exp-year">2021.05—<br>2025.07</span>
+          <div class="exp-right">
+            <div class="exp-role" data-zh="资深用户体验设计师" data-en="Senior UX Designer">资深用户体验设计师</div>
+            <div class="exp-company" data-zh="大邦创新设计咨询 · 上海" data-en="Dabang Innovation Design · Shanghai">大邦创新设计咨询 · 上海</div>
+            <div class="exp-desc" data-zh="参与金融、汽车、医疗、消费等多领域策略咨询与全流程设计，善于通过用户研究与数据洞察推动产品易用性与转化效率提升，关键项目获 UX Design Awards 提名。" data-en="Led strategy consulting and full-cycle design across finance, automotive, healthcare and consumer. Key projects nominated for UX Design Awards.">参与金融、汽车、医疗、消费等多领域策略咨询与全流程设计，善于通过用户研究与数据洞察推动产品易用性与转化效率提升，关键项目获 UX Design Awards 提名。</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <span class="exp-year">2021.01—<br>2021.03</span>
+          <div class="exp-right">
+            <div class="exp-role" data-zh="交互设计实习生" data-en="Interaction Design Intern">交互设计实习生</div>
+            <div class="exp-company" data-zh="Verynice.co · 旧金山" data-en="Verynice.co · San Francisco">Verynice.co · 旧金山</div>
+            <div class="exp-desc" data-zh="参与多个公益项目网站交互设计优化，主持共创工作坊，独立提出交互优化方案。" data-en="Optimized interaction design for multiple non-profit websites. Facilitated co-creation workshops and delivered independent UX proposals.">参与多个公益项目网站交互设计优化，主持共创工作坊，独立提出交互优化方案。</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <span class="exp-year">2019.02—<br>2019.05</span>
+          <div class="exp-right">
+            <div class="exp-role" data-zh="交互设计实习生" data-en="Interaction Design Intern">交互设计实习生</div>
+            <div class="exp-company" data-zh="牛津艺术中心 · 牛津" data-en="Oxford Arts Centre · Oxford">牛津艺术中心 · 牛津</div>
+            <div class="exp-desc" data-zh="独立完成网站设计优化，网站上线3个月浏览量增加15%，线上购票转化率增加200%。" data-en="Independently redesigned the website. Within 3 months: +15% traffic, +200% online ticket conversion.">独立完成网站设计优化，网站上线3个月浏览量增加15%，线上购票转化率增加200%。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-section-title" data-zh="教育背景" data-en="Education">教育背景</div>
+      <div class="edu-list">
+        <div class="edu-item">
+          <span class="edu-year">2019—2020</span>
+          <div>
+            <div class="edu-school" data-zh="加州艺术学院 California College of the Arts" data-en="California College of the Arts">加州艺术学院 California College of the Arts</div>
+            <div class="edu-major" data-zh="交互设计硕士 MFA" data-en="MFA · Interaction Design">交互设计硕士 MFA</div>
+          </div>
+        </div>
+        <div class="edu-item">
+          <span class="edu-year">2015—2018</span>
+          <div>
+            <div class="edu-school" data-zh="迈阿密大学 Miami University" data-en="Miami University">迈阿密大学 Miami University</div>
+            <div class="edu-major" data-zh="交互媒体研究 · 辅修传播设计 · 前5%荣誉毕业 magna cum laude" data-en="Interactive Media Studies · Minor: Communication Design · Magna Cum Laude (Top 5%)">交互媒体研究 · 辅修传播设计 · 前5%荣誉毕业 magna cum laude</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-section-title" data-zh="奖项" data-en="Awards">奖项</div>
+      <div class="awards-list">
+        <div class="award-item">
+          <div class="award-icon">🏆</div>
+          <div>
+            <div class="award-name">UX Design Awards — Nominee</div>
+            <div class="award-year" data-zh="2023 · 极氪汽车全渠道数字触点策略" data-en="2023 · Zeekr Auto Omnichannel Digital Strategy">2023 · 极氪汽车全渠道数字触点策略</div>
+          </div>
+        </div>
+        <div class="award-item">
+          <div class="award-icon">🏆</div>
+          <div>
+            <div class="award-name">UX Design Awards — Nominee</div>
+            <div class="award-year" data-zh="大邦创新设计咨询关键项目提名" data-en="Nominated via Dabang Innovation Design key project">大邦创新设计咨询关键项目提名</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ══════ CONTACT ══════ -->
+<div id="contact" class="section">
+  <div class="contact-inner">
+    <div class="contact-eyebrow" data-zh="开始对话" data-en="Get In Touch">开始对话</div>
+    <h2 class="contact-title" data-zh="很高兴认识你" data-en="Let's Connect">很高兴认识你</h2>
+    <p class="contact-desc" data-zh="无论是全职机会、项目合作，还是只是想聊聊设计，都欢迎联系。我会在 24 小时内回复。" data-en="Whether it's a full-time role, project collab, or just a design chat — reach out. I'll reply within 24 hours.">无论是全职机会、项目合作，还是只是想聊聊设计，都欢迎联系。我会在 24 小时内回复。</p>
+    <div class="contact-methods">
+      <a href="mailto:elleliluyuan@gmail.com" class="contact-method">
+        <div class="contact-method-left"><div class="contact-icon">✉️</div><div><div class="contact-method-name" data-zh="邮件" data-en="Email">邮件</div><div class="contact-method-val">elleliluyuan@gmail.com</div></div></div>
+        <div class="contact-arrow">→</div>
+      </a>
+      <a href="tel:15290870617" class="contact-method">
+        <div class="contact-method-left"><div class="contact-icon">📱</div><div><div class="contact-method-name" data-zh="电话 / 微信" data-en="Phone / WeChat">电话 / 微信</div><div class="contact-method-val">152-9087-0617</div></div></div>
+        <div class="contact-arrow">→</div>
+      </a>
+      <a href="#" class="contact-method">
+        <div class="contact-method-left"><div class="contact-icon">🌐</div><div><div class="contact-method-name" data-zh="现居上海，接受远程合作" data-en="Based in Shanghai · Open to Remote">现居上海，接受远程合作</div><div class="contact-method-val" data-zh="中文 · 英文均可" data-en="Chinese · English">中文 · 英文均可</div></div></div>
+        <div class="contact-arrow">→</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p data-zh="© 2025 李鹿原 · 资深产品设计师" data-en="© 2025 Elle Li · Senior Product Designer">© 2025 李鹿原 · 资深产品设计师</p>
+  <p data-zh="上海 · 远程" data-en="Shanghai · Remote">上海 · 远程</p>
+</footer>
+
+<script>
+const projects = [
+  { id:1,
+    title:'建信消费金融 APP 0-1 搭建', en:'CCB Consumer Finance App · 0→1',
+    desc:'策划并主持3场跨部门策略工作坊，明确产品核心价值主张，主导授信、借款、商城、账户四大核心模块交互设计。推动首版MVP在3个月内上线，用户注册转化率超行业基准15%。',
+    descEn:'Facilitated 3 cross-functional strategy workshops to define core value proposition. Led interaction design for 4 core modules (credit, loans, mall, account). MVP launched in 3 months — registration conversion exceeded industry benchmark by 15%.',
+    industry:'finance', skills:['strategy','ia','interaction'], emoji:'🏦', bg:'#e8f0e2' },
+  { id:2,
+    title:'宁波银行 宁波花APP核心流程优化', en:'Bank of Ningbo · App Core Flow Optimization',
+    desc:'从行业趋势调研与用户借贷场景切入，基于用户特征识别借贷关键痛点，制定涵盖结构、品牌、交互等多维度的优化策略，通过策略指导设计决策，提升金融产品易用度与转化效率。',
+    descEn:'Identified key pain points in lending journeys via industry research and user profiling. Developed a multi-dimensional optimization strategy (structure, brand, interaction) to improve usability and conversion efficiency.',
+    industry:'finance', skills:['research','strategy','interaction'], emoji:'💳', bg:'#deeaf0' },
+  { id:3,
+    title:'山东城商行联盟 个人网银体验策略创新', en:'Shandong City Banks · Online Banking Strategy',
+    desc:'主导试点行转账、理财购买、贷款申请等5个核心业务流程的概念重塑与细节打磨，重建导航结构与反馈机制，建立统一交互规范组件库，推广至联盟旗下全部银行。',
+    descEn:'Led concept redesign and detail refinement of 5 core banking flows. Rebuilt navigation and feedback systems. Created a unified interaction spec component library, rolled out to all alliance banks.',
+    industry:'finance', skills:['strategy','ia','interaction','visual'], emoji:'🏛', bg:'#e8e0f0' },
+  { id:4,
+    title:'浦发银行 浦惠到家可用性评估及改版策略', en:'SPD Bank · Usability Audit & Redesign Strategy',
+    desc:'通过用户访谈与行为轨迹分析，识别现有链路的体验断点，为改版方案提供量化的数据支撑与策略方向。结合市场竞品分析与行业趋势研究，输出系统化改版建议。',
+    descEn:'Identified experience breakpoints via user interviews and behavioral data. Produced quantified redesign recommendations backed by competitive analysis and industry trend research.',
+    industry:'finance', skills:['research','strategy','ia'], emoji:'📊', bg:'#f8f0e0' },
+  { id:5,
+    title:'极氪汽车 全渠道数字触点策略 & 官网升级', en:'Zeekr Auto · Omnichannel Digital Strategy',
+    desc:'基于2000+份定量问卷及20+场用户深度访谈，制定多渠道触点定位策略，主导极氪001官网改版及APP/小程序等5大触点的创新方案设计。实现官网用户平均留时长提升40%，项目获UX Design Awards 2023提名。',
+    descEn:'Based on 2000+ surveys and 20+ in-depth interviews, defined a multi-touchpoint positioning strategy. Led redesign of 001 website and 5 digital touchpoints. +40% avg session duration. UX Design Awards 2023 Nominee.',
+    industry:'auto', skills:['research','strategy','interaction','visual'], emoji:'🚗', bg:'#f0ede0', award:true },
+  { id:6,
+    title:'全国工会 职工书屋 APP 产品策略升级', en:'ACFTU · Worker Bookstore App Strategy',
+    desc:'从用户调研出发梳理阅读全链路需求，重新规划功能架构与核心场景，主导交互改版，设计 AI 导读、阅读工具和成长体系等关键能力，提升找书效率和阅读沉浸感。',
+    descEn:'Mapped the full reading journey through user research, replanned feature architecture, and led interaction redesign. Designed AI reading guide, reading tools, and growth system to improve book discovery and immersion.',
+    industry:'labor', skills:['research','strategy','ia','interaction'], emoji:'📚', bg:'#e0f0ec' },
+  { id:7,
+    title:'牛津艺术中心 网站设计优化', en:'Oxford Arts Centre · Website Redesign',
+    desc:'独立完成官网设计优化及品牌风格指南设计。新网站上线3个月浏览量增加15%，线上购票转化率增加200%。',
+    descEn:'Independently redesigned the website and created brand style guide. Launched and achieved +15% traffic and +200% online ticket conversion within 3 months.',
+    industry:'culture', skills:['ia','interaction','visual'], emoji:'🎭', bg:'#f0e0e8' },
+];
+
+const iZh={finance:'金融',auto:'汽车',labor:'公共服务',culture:'文化艺术'};
+const iEn={finance:'Finance',auto:'Auto',labor:'Public',culture:'Arts'};
+const sZh={research:'用研',strategy:'产品策略',ia:'信息架构',interaction:'交互设计',visual:'视觉设计'};
+const sEn={research:'Research',strategy:'Strategy',ia:'IA',interaction:'Interaction',visual:'Visual'};
+
+let lang='zh', filters={industry:'all',skill:'all'};
+
+function renderCards(){
+  const grid=document.getElementById('masonry-grid');
+  const f=projects.filter(p=>
+    (filters.industry==='all'||p.industry===filters.industry)&&
+    (filters.skill==='all'||p.skills.includes(filters.skill))
+  );
+  if(!f.length){
+    grid.innerHTML=`<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">${lang==='zh'?'暂无符合条件的项目':'No matching projects'}</div></div>`;
+    return;
+  }
+  grid.innerHTML=f.map((p,i)=>`
+    <div class="masonry-card" style="animation-delay:${i*0.05}s" onclick="openProject(${p.id})">
+      <div class="card-thumb"><div class="card-thumb-bg" style="background:${p.bg}">${p.emoji}</div></div>
+      <div class="card-body">
+        <div class="card-tags-row">
+          <span class="card-tag">${lang==='zh'?iZh[p.industry]:iEn[p.industry]}</span>
+          ${p.award?'<span class="card-tag" style="background:#fff7e0;color:#9a6e00">🏆 UX Awards</span>':''}
+        </div>
+        <div class="card-title">${lang==='zh'?p.title:p.en}</div>
+        <div class="card-desc">${lang==='zh'?p.desc:p.descEn}</div>
+        <div class="card-meta">
+          <div class="card-meta-left">${p.skills.slice(0,2).map(s=>`<span class="meta-pill">${lang==='zh'?sZh[s]:sEn[s]}</span>`).join('')}</div>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openProject(id){
+  const p=projects.find(x=>x.id===id);
+  alert(lang==='zh'?`「${p.title}」\n\n点击后将打开你上传的 PDF 案例文档。`:`"${p.en}"\n\nThis will open your uploaded PDF case study.`);
+}
+
+document.querySelectorAll('.tag').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const g=btn.dataset.group,f=btn.dataset.filter;
+    filters[g]=f;
+    document.querySelectorAll(`[data-group="${g}"]`).forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards();
+  });
+});
+
+/* Nav active on scroll */
+const sectionIds=['home','work','about','contact'];
+const navLinks=document.querySelectorAll('.nav-links a');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
+    }
+  });
+},{threshold:0.3});
+sectionIds.forEach(id=>{ const el=document.getElementById(id); if(el) observer.observe(el); });
+
+function toggleLang(){
+  lang=lang==='zh'?'en':'zh';
+  document.querySelector('.lang-btn').textContent=lang==='zh'?'EN':'中';
+  document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+  document.querySelectorAll('[data-zh]').forEach(el=>{
+    const t=lang==='zh'?el.dataset.zh:el.dataset.en;
+    if(t) el.innerHTML=t;
+  });
+  renderCards();
+}
+
+renderCards();
+</script>
+</body>
+</html>
