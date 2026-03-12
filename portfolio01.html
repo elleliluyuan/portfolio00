@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>李鹿原 · Senior Product Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0002FF;
+  --red:  #FF1F00;
+  --white: #ffffff;
+  --pad: 48px;   /* left/right page margin outside the frame */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border: 0; }
+html, body {
+  font-family: 'DM Mono', monospace;
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 1.5rem;
+  color: var(--blue);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { color: #fff; background: var(--red); -webkit-text-fill-color: #fff; }
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════
+   OUTER WRAPPER — the blue-bordered frame
+   with page margins on left + right
+══════════════════════════════════ */
+.page-frame {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--pad);
+}
+
+/* Every top-level section sits inside .frame-box,
+   which draws the continuous outer border */
+.frame-box {
+  border: 1px solid var(--blue);
+  /* sections stack vertically; inner borders are
+     drawn on the children, not here */
+}
+
+/* ── RULER ── */
+.ruler {
+  height: 18px;
+  border-top: 1px solid var(--blue);
+  border-bottom: 1px solid var(--blue);
+  background-image:
+    repeating-linear-gradient(to right, var(--blue) 0, var(--blue) 1px, transparent 1px, transparent 20px),
+    repeating-linear-gradient(to right, var(--blue) 0, var(--blue) 1px, transparent 1px, transparent 5px);
+  background-size: 20px 10px, 5px 6px;
+  background-position: 0 0, 0 12px;
+  background-repeat: repeat-x;
+  opacity: 0.22;
+}
+
+/* ── NAV ── */
+nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--blue);
+  margin: 1.5rem 0 0.9rem;
+}
+.nav-logo { font-weight: 400; font-size: 16px; }
+.nav-links { display: flex; gap: 28px; justify-content: center; }
+.nav-links a { font-size: 16px; font-weight: 300; }
+.nav-links a.ext::after { content: '↗'; color: var(--red); font-size: 12px; margin-left: 2px; }
+.nav-email { text-align: right; font-size: 16px; }
+.nav-email a:hover { color: var(--red); }
+
+/* ── HERO ── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--blue);
+}
+.hero-photo {
+  border-right: 1px solid var(--blue);
+  overflow: hidden;
+  min-height: 420px;
+  background: #d6daff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 120px;
+}
+/* USP 2x2 grid embedded in right hero column */
+.hero-usp {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.hero-usp-cell {
+  padding: 30px 26px;
+  border-bottom: 1px solid var(--blue);
+  transition: background .2s; cursor: default;
+}
+.hero-usp-cell:nth-child(even) { border-left: 1px solid var(--blue); }
+.hero-usp-cell:nth-last-child(-n+2) { border-bottom: none; }
+.hero-usp-cell:hover { background: #f0f1ff; }
+.usp-icon { font-size: 34px; margin-bottom: 12px; display: block; }
+.usp-title { font-size: 16px; font-weight: 700; margin-bottom: 9px; line-height: 1.25; }
+.usp-desc { font-size: 12.5px; line-height: 1.5rem; opacity: 0.68; }
+
+/* ── MARQUEE ── */
+.marquee-wrap {
+  border-bottom: 1px solid var(--blue);
+  overflow: hidden;
+  padding: 10px 0;
+}
+.marquee-track {
+  display: flex; width: max-content;
+  animation: marquee 20s linear infinite;
+  white-space: nowrap;
+}
+.marquee-item {
+  font-size: clamp(38px, 5.5vw, 68px);
+  font-weight: 300; font-style: italic;
+  color: var(--red); padding: 0 36px;
+  opacity: 0.18; letter-spacing: -0.01em;
+}
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+
+
+/* ── WORK ── */
+.work-filters-wrap {
+  border-bottom: 1px solid var(--blue);
+  padding: 14px 20px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.filter-row {
+  display: flex; align-items: center; gap: 0;
+}
+.filter-label {
+  font-size: 11px; opacity: 0.4; white-space: nowrap;
+  width: 52px; flex-shrink: 0; font-style: italic;
+}
+.filter-group { display: flex; gap: 0; flex-wrap: wrap; gap: 4px; }
+.filter-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; font-weight: 300;
+  padding: 4px 14px;
+  border: none; background: none;
+  color: var(--blue); opacity: 0.45;
+  cursor: pointer; white-space: nowrap;
+  transition: color .15s, opacity .15s;
+}
+.filter-btn:hover { opacity: 1; color: var(--blue); }
+.filter-btn.active { color: var(--red); opacity: 1; font-weight: 500; }
+.filter-clear {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 300;
+  padding: 4px 10px; margin-left: 8px;
+  border: 1px solid var(--red); background: none;
+  color: var(--red); cursor: pointer; opacity: 0.7;
+  transition: opacity .15s;
+}
+.filter-clear:hover { opacity: 1; }
+
+.work-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.work-card {
+  border-bottom: 1px solid var(--blue);
+  cursor: pointer; transition: background .15s; display: block;
+}
+.work-card:not(:nth-child(3n+1)) { border-left: 1px solid var(--blue); }
+.work-card:hover { background: #f0f1ff; }
+.work-card:nth-last-child(-n+3) { border-bottom: none; }
+
+.work-thumb {
+  height: 190px; overflow: hidden;
+  border-bottom: 1px solid var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52px;
+  filter: grayscale(1);
+  transition: filter .3s;
+}
+.work-card:hover .work-thumb,
+.work-card.selected .work-thumb { filter: grayscale(0); }
+.work-body { padding: 26px 30px; }
+.work-industry { font-size: 12px; color: var(--red); margin-bottom: 7px; font-style: italic; }
+.work-title { font-size: 18px; font-weight: 700; line-height: 1.25; margin-bottom: 10px; }
+.work-desc { font-size: 13px; line-height: 1.5rem; opacity: 0.62; margin-bottom: 14px; }
+.work-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.work-tag { font-size: 11px; padding: 2px 8px; border: 1px solid currentColor; opacity: 0.5; }
+.work-tag.award { color: var(--red); opacity: 1; border-color: var(--red); }
+.work-empty { grid-column: 1/-1; padding: 64px; text-align: center; font-style: italic; opacity: 0.4; }
+
+/* ── ABOUT ── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+}
+.about-left {
+  border-right: 1px solid var(--blue);
+  padding: 44px 36px;
+  display: flex; flex-direction: column; gap: 28px;
+}
+.about-photo {
+  width: 100%; aspect-ratio: 3/4;
+  max-width: 200px;
+  background: linear-gradient(135deg,#d0d5ff 0%,#8892ff 100%);
+  border: 1px solid var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 72px;
+}
+.about-links { display: flex; flex-direction: column; gap: 8px; }
+.alink { font-size: 13px; opacity: 0.6; transition: opacity .15s; word-break: break-all; }
+.alink:hover { opacity: 1; color: var(--red); text-decoration: none; }
+
+.about-right { padding: 44px 40px; }
+.about-name { font-size: 44px; font-weight: 700; line-height: 1; margin-bottom: 8px; }
+.about-role { font-size: 13px; color: var(--red); font-style: italic; margin-bottom: 24px; }
+.about-bio { font-size: 14px; line-height: 1.7rem; opacity: 0.72; margin-bottom: 28px; }
+
+.about-sub { font-size: 11px; color: var(--red); font-style: italic; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--blue); opacity: 0.8; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 24px; }
+.chip { font-size: 12px; padding: 3px 10px; border: 1px solid var(--blue); opacity: 0.55; }
+
+.exp-item { margin-bottom: 18px; }
+.exp-head { display: flex; gap: 14px; align-items: baseline; margin-bottom: 4px; flex-wrap: wrap; }
+.exp-role { font-size: 15px; font-weight: 700; }
+.exp-co { font-size: 12px; color: var(--red); font-style: italic; }
+.exp-period { font-size: 11px; opacity: 0.4; margin-left: auto; }
+.exp-desc { font-size: 12px; opacity: 0.62; line-height: 1.5rem; }
+
+.edu-row { display: flex; gap: 18px; margin-bottom: 10px; }
+.edu-yr { font-size: 11px; opacity: 0.38; width: 74px; flex-shrink: 0; padding-top: 2px; }
+.edu-school { font-size: 14px; font-weight: 500; }
+.edu-major { font-size: 12px; opacity: 0.55; }
+
+.award-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--blue); margin-bottom: 8px; }
+.award-icon { font-size: 18px; }
+.award-name { font-size: 14px; font-weight: 500; }
+.award-sub { font-size: 11px; opacity: 0.5; }
+
+/* ── CONTACT ── */
+.contact-section {
+  background: var(--blue); color: var(--white);
+  padding: 60px 36px;
+  border-top: 1px solid var(--blue);
+}
+.contact-lbl { font-size: 13px; opacity: 0.55; margin-bottom: 16px; font-style: italic; }
+.contact-title { font-size: clamp(22px, 3.2vw, 40px); font-weight: 700; line-height: 1.25; margin-bottom: 36px; }
+.contact-row { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+.contact-email-btn {
+  display: inline-block; border: 1px solid rgba(255,255,255,0.4);
+  padding: 13px 26px; font-size: 15px; color: var(--white);
+  transition: background .15s;
+}
+.contact-email-btn:hover { background: rgba(255,255,255,0.12); text-decoration: none; }
+.contact-or { font-size: 14px; opacity: 0.6; }
+.contact-li { color: var(--white); border-bottom: 1px solid rgba(255,255,255,0.35); }
+.contact-li:hover { color: var(--red); border-color: var(--red); text-decoration: none; }
+
+/* ── FOOTER ── */
+.frame-footer {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; padding: 16px 28px;
+  border-top: 1px solid var(--blue);
+  font-size: 14px;
+  margin-bottom: 1.5rem;
+}
+.frame-footer .f-links { display: flex; gap: 24px; }
+.frame-footer .f-right { text-align: right; }
+
+/* scroll-spy active */
+.nav-links a.active { color: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="page-frame">
+  <div class="frame-box">
+
+    <!-- NAV -->
+    <nav>
+      <div class="nav-logo">李鹿原</div>
+      <div class="nav-links">
+        <a href="#work">作品</a>
+        <a href="#about">关于</a>
+        <a href="#" class="ext">LinkedIn</a>
+      </div>
+      <div class="nav-email"><a href="/cdn-cgi/l/email-protection#0560696960696c69707c70646b456268646c692b666a68"><span class="__cf_email__" data-cfemail="294c45454c4540455c505c4847694e44484045074a4644">[email&#160;protected]</span></a></div>
+    </nav>
+
+    <!-- HERO — photo left, USP 2x2 right -->
+    <section class="hero">
+      <div class="hero-photo">🧑‍🎨</div>
+      <div class="hero-usp">
+        <div class="hero-usp-cell">
+          <span class="usp-icon">🔍</span>
+          <h3 class="usp-title">用研驱动，不凭感觉拍板</h3>
+          <p class="usp-desc">我不依赖直觉做设计决策。2000+ 定量问卷、20+ 深度访谈、可用性测试——每一个方案背后都有数据支撑，让设计改动有据可查、可被验证。</p>
+        </div>
+        <div class="hero-usp-cell">
+          <span class="usp-icon">📐</span>
+          <h3 class="usp-title">全流程，从策略到落地</h3>
+          <p class="usp-desc">从产品策略工作坊到交互规范文档，我能独立负责从0到1的完整设计链路，也能深入已有产品做精准的体验优化。</p>
+        </div>
+        <div class="hero-usp-cell">
+          <span class="usp-icon">🏦</span>
+          <h3 class="usp-title">深耕复杂场景</h3>
+          <p class="usp-desc">金融借贷、银行核心流程、汽车 HMI、医疗运营——这些高密度信息、强业务逻辑的场景是我的主场，而不是挑战。</p>
+        </div>
+        <div class="hero-usp-cell">
+          <span class="usp-icon">🌏</span>
+          <h3 class="usp-title">国际化视野，中英双语</h3>
+          <p class="usp-desc">MFA 毕业于加州艺术学院，曾在旧金山和牛津工作。IELTS 7.5，能与国际团队无障碍协作，带来本土执行力 + 全球视野的组合。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RULER -->
+    <div class="ruler"></div>
+
+    <!-- WORK -->
+    <section id="work">
+      <div class="work-filters-wrap">
+        <div class="filter-row">
+          <span class="filter-label">行业 /</span>
+          <div class="filter-group" id="industry-filter">
+            <button class="filter-btn filter-all active" data-filter="all">全部</button>
+            <button class="filter-btn" data-filter="finance">金融</button>
+            <button class="filter-btn" data-filter="auto">汽车</button>
+            <button class="filter-btn" data-filter="labor">公共服务</button>
+            <button class="filter-btn" data-filter="culture">文化艺术</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label">技能 /</span>
+          <div class="filter-group" id="skill-filter">
+            <button class="filter-btn filter-all active" data-filter="all">全部</button>
+            <button class="filter-btn" data-filter="research">用研</button>
+            <button class="filter-btn" data-filter="strategy">产品策略</button>
+            <button class="filter-btn" data-filter="ia">信息架构</button>
+            <button class="filter-btn" data-filter="interaction">交互设计</button>
+            <button class="filter-btn" data-filter="visual">视觉设计</button>
+          </div>
+        </div>
+      </div>
+      <div class="work-grid" id="work-grid"></div>
+    </section>
+
+    <!-- RULER -->
+    <div class="ruler"></div>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="about-grid">
+
+        <!-- LEFT: photo + contact + skills + tools + award -->
+        <div class="about-left">
+          <div class="about-photo">🧑‍🎨</div>
+
+          <div class="about-links">
+            <a href="mailto:elleliluyuan@gmail.com" class="alink">✉ elleliluyuan@gmail.com</a>
+            <a href="tel:15290870617" class="alink">◎ 152-9087-0617</a>
+            <a href="#" class="alink">↓ 下载简历 PDF</a>
+          </div>
+
+          <div>
+            <div class="about-sub">核心能力</div>
+            <div class="chip-row">
+              <span class="chip">用户研究</span>
+              <span class="chip">可用性测试</span>
+              <span class="chip">产品策略</span>
+              <span class="chip">服务设计</span>
+              <span class="chip">信息架构</span>
+              <span class="chip">UX 设计</span>
+              <span class="chip">UI 设计</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="about-sub">工具</div>
+            <div class="chip-row">
+              <span class="chip">Figma</span>
+              <span class="chip">Midjourney</span>
+              <span class="chip">Cursor</span>
+              <span class="chip">Axure</span>
+              <span class="chip">Illustrator</span>
+              <span class="chip">Photoshop</span>
+              <span class="chip">After Effects</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="about-sub">奖项</div>
+            <div class="award-row">
+              <span class="award-icon">🏆</span>
+              <div>
+                <div class="award-name">UX Design Awards 2023</div>
+                <div class="award-sub">Nominee · 极氪汽车全渠道数字触点策略</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: name + bio + experience + education -->
+        <div class="about-right">
+          <div class="about-name">李鹿原</div>
+          <div class="about-role">Senior Product Designer</div>
+          <p class="about-bio">6年全流程体验设计经验，现任职于大邦创新设计咨询（上海），服务过金融、汽车、医疗、消费等多个行业头部客户。善于将用户研究与数据洞察转化为可落地的设计策略，推动产品易用性与商业转化双向提升。<br><br>毕业于加州艺术学院（MFA 交互设计），迈阿密大学前5%荣誉毕业生。英语工作流利，IELTS 7.5。</p>
+
+          <div class="about-sub">工作经历</div>
+          <div class="exp-item">
+            <div class="exp-head">
+              <span class="exp-role">资深用户体验设计师</span>
+              <span class="exp-co">大邦创新设计咨询 · 上海</span>
+              <span class="exp-period">2021.05—2025.07</span>
+            </div>
+            <p class="exp-desc">参与金融、汽车、医疗、消费等多领域策略咨询与全流程设计，关键项目获 UX Design Awards 提名。</p>
+          </div>
+          <div class="exp-item">
+            <div class="exp-head">
+              <span class="exp-role">交互设计实习生</span>
+              <span class="exp-co">Verynice.co · 旧金山</span>
+              <span class="exp-period">2021.01—2021.03</span>
+            </div>
+            <p class="exp-desc">参与多个公益项目网站交互设计优化，主持共创工作坊，独立提出交互优化方案。</p>
+          </div>
+          <div class="exp-item">
+            <div class="exp-head">
+              <span class="exp-role">交互设计实习生</span>
+              <span class="exp-co">牛津艺术中心 · 牛津</span>
+              <span class="exp-period">2019.02—2019.05</span>
+            </div>
+            <p class="exp-desc">独立完成网站设计优化。上线3个月：浏览量 +15%，购票转化率 +200%。</p>
+          </div>
+
+          <div class="about-sub">教育背景</div>
+          <div class="edu-row">
+            <span class="edu-yr">2019—2020</span>
+            <div>
+              <div class="edu-school">California College of the Arts</div>
+              <div class="edu-major">MFA · 交互设计</div>
+            </div>
+          </div>
+          <div class="edu-row">
+            <span class="edu-yr">2015—2018</span>
+            <div>
+              <div class="edu-school">Miami University</div>
+              <div class="edu-major">交互媒体研究 · Magna Cum Laude（前5%）</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RULER -->
+    <div class="ruler"></div>
+
+    <!-- CONTACT -->
+    <section id="contact" class="contact-section">
+      <p class="contact-lbl">Contact</p>
+      <h2 class="contact-title">打破沟通摩擦。<br>让好设计真正落地。</h2>
+      <div class="contact-row">
+        <a href="/cdn-cgi/l/email-protection#16737a7a737a7f7a636f63777856717b777f7a3875797b" class="contact-email-btn"><span class="__cf_email__" data-cfemail="ceaba2a2aba2a7a2bbb7bbafa08ea9a3afa7a2e0ada1a3">[email&#160;protected]</span></a>
+        <span class="contact-or">或通过 <a href="#" class="contact-li">LinkedIn</a> 联系我。</span>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div class="frame-footer">
+      <div>李鹿原</div>
+      <div class="f-links">
+        <a href="#work">作品</a>
+        <a href="#about">关于</a>
+        <a href="#" class="ext" style="position:relative">LinkedIn<span style="color:var(--red);font-size:11px;margin-left:2px">↗</span></a>
+      </div>
+      <div class="f-right"><a href="/cdn-cgi/l/email-protection#6a0f06060f0603061f131f0b042a0d070b030644090507"><span class="__cf_email__" data-cfemail="0b6e67676e6762677e727e6a654b6c666a626725686466">[email&#160;protected]</span></a></div>
+    </div>
+
+  </div><!-- /frame-box -->
+</div><!-- /page-frame -->
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const projects=[
+  {id:1,title:'建信消费金融 APP 0→1',desc:'策划3场跨部门策略工作坊，主导授信、借款、商城、账户四大核心模块交互设计。MVP 3个月内上线，用户注册转化率超行业基准 15%。',industry:'finance',skills:['strategy','ia','interaction'],emoji:'🏦',bg:'#e8edff'},
+  {id:2,title:'宁波花 APP 核心流程优化',desc:'基于用户特征识别借贷关键痛点，制定涵盖结构、品牌、交互等多维度优化策略，提升金融产品易用度与转化效率。',industry:'finance',skills:['research','strategy','interaction'],emoji:'💳',bg:'#eef0ff'},
+  {id:3,title:'山东城商行联盟 网银体验策略创新',desc:'主导5个核心业务流程概念重塑，重建导航结构与反馈机制，建立统一交互规范组件库，推广至联盟旗下全部银行。',industry:'finance',skills:['strategy','ia','interaction','visual'],emoji:'🏛',bg:'#f0eeff'},
+  {id:4,title:'浦惠到家 可用性评估及改版策略',desc:'通过用户访谈与行为轨迹分析，识别现有链路的体验断点，结合竞品分析与行业研究，输出系统化改版建议。',industry:'finance',skills:['research','strategy','ia'],emoji:'📊',bg:'#fff0ee'},
+  {id:5,title:'极氪汽车 全渠道数字触点策略',desc:'2000+ 定量问卷 + 20+ 深度访谈，主导极氪001官网改版及 APP/小程序等5大触点设计。官网用户平均留时长 +40%，UX Design Awards 2023 提名。',industry:'auto',skills:['research','strategy','interaction','visual'],emoji:'🚗',bg:'#eefff4',award:true},
+  {id:6,title:'全国工会 职工书屋 APP 策略升级',desc:'梳理阅读全链路需求，重新规划功能架构与核心场景，设计 AI 导读、阅读工具和成长体系等关键能力。',industry:'labor',skills:['research','strategy','ia','interaction'],emoji:'📚',bg:'#eef8ff'},
+  {id:7,title:'牛津艺术中心 网站设计优化',desc:'独立完成官网设计优化及品牌风格指南。上线3个月：浏览量 +15%，线上购票转化率 +200%。',industry:'culture',skills:['ia','interaction','visual'],emoji:'🎭',bg:'#fff0f8'},
+];
+const iLabel={finance:'金融',auto:'汽车',labor:'公共服务',culture:'文化艺术'};
+const sLabel={research:'用研',strategy:'产品策略',ia:'信息架构',interaction:'交互设计',visual:'视觉设计'};
+const ALL_INDUSTRIES = ['finance','auto','labor','culture'];
+const ALL_SKILLS     = ['research','strategy','ia','interaction','visual'];
+
+// null = "全部"; Set = specific multi-selection
+let industryState = null;
+let skillState    = null;
+
+function matchIndustry(p){ return industryState === null || industryState.has(p.industry); }
+function matchSkill(p){    return skillState    === null || p.skills.some(s => skillState.has(s)); }
+
+function renderWork(){
+  const grid = document.getElementById('work-grid');
+  const f = projects.filter(p => matchIndustry(p) && matchSkill(p));
+  if(!f.length){ grid.innerHTML='<div class="work-empty">// 暂无匹配项目</div>'; return; }
+  grid.innerHTML = f.map(p=>`
+    <div class="work-card" onclick="alert('「${p.title}」\n\n点击后将打开你上传的 PDF 案例文档。')">
+      <div class="work-thumb" style="background:${p.bg}">${p.emoji}</div>
+      <div class="work-body">
+        <div class="work-industry">${iLabel[p.industry]}${p.award?' · 🏆 UX Awards':''}</div>
+        <div class="work-title">${p.title}</div>
+        <div class="work-desc">${p.desc}</div>
+        <div class="work-tags">${p.skills.map(s=>`<span class="work-tag">${sLabel[s]}</span>`).join('')}${p.award?'<span class="work-tag award">🏆</span>':''}</div>
+      </div>
+    </div>`).join('');
+
+  // wire hover for grayscale-to-color (toggle .selected on click for persistent color)
+  document.querySelectorAll('.work-card').forEach(card=>{
+    card.addEventListener('click', ()=> card.classList.toggle('selected'));
+  });
+}
+
+function syncFilterUI(groupId, state, allValues){
+  const isAll = state === null;
+  // "全部" button
+  document.querySelector(`#${groupId} .filter-all`).classList.toggle('active', isAll);
+  // individual buttons: active = in state set (when not "全部" mode)
+  document.querySelectorAll(`#${groupId} .filter-btn:not(.filter-all)`).forEach(b=>{
+    b.classList.toggle('active', !isAll && state.has(b.dataset.filter));
+  });
+  // clear button: show when in specific mode AND at least one item deselected
+  const row = document.getElementById(groupId).closest('.filter-row');
+  let clearBtn = row.querySelector('.filter-clear');
+  const showClear = !isAll && state.size < allValues.length;
+  if(showClear && !clearBtn){
+    clearBtn = document.createElement('button');
+    clearBtn.className = 'filter-clear';
+    clearBtn.textContent = '清除';
+    clearBtn.addEventListener('click', ()=>{
+      if(groupId==='industry-filter') industryState = null;
+      else skillState = null;
+      syncFilterUI(groupId, null, allValues);
+      renderWork();
+    });
+    row.appendChild(clearBtn);
+  } else if(!showClear && clearBtn){
+    clearBtn.remove();
+  }
+}
+
+function wireGroup(groupId, allValues, getState, setState){
+  // "全部" — reset to null
+  document.querySelector(`#${groupId} .filter-all`).addEventListener('click',()=>{
+    setState(null);
+    syncFilterUI(groupId, getState(), allValues);
+    renderWork();
+  });
+  // individual — toggle in/out of a Set; "全部" deactivates
+  document.querySelectorAll(`#${groupId} .filter-btn:not(.filter-all)`).forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const v = btn.dataset.filter;
+      let s = getState();
+      // first click on individual: leave "全部", start fresh with ONLY this item
+      if(s === null){
+        s = new Set([v]);
+      } else {
+        // toggle
+        if(s.has(v)){
+          if(s.size === 1) return; // must keep at least one
+          s.delete(v);
+        } else {
+          s.add(v);
+          // if all selected, revert to "全部"
+          if(s.size === allValues.length){ setState(null); syncFilterUI(groupId, null, allValues); renderWork(); return; }
+        }
+      }
+      setState(s);
+      syncFilterUI(groupId, getState(), allValues);
+      renderWork();
+    });
+  });
+}
+
+wireGroup('industry-filter', ALL_INDUSTRIES,
+  ()=>industryState, (v)=>{ industryState=v; });
+wireGroup('skill-filter', ALL_SKILLS,
+  ()=>skillState, (v)=>{ skillState=v; });
+
+// Scroll spy
+const navA = document.querySelectorAll('.nav-links a[href^="#"]');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) navA.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+e.target.id));
+  });
+},{threshold:0.35});
+['work','about','contact'].forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+
+syncFilterUI('industry-filter', null, ALL_INDUSTRIES);
+syncFilterUI('skill-filter', null, ALL_SKILLS);
+renderWork();
+</script><script>
+const projects=[
+  {id:1,title:'建信消费金融 APP 0→1',desc:'策划3场跨部门策略工作坊，主导授信、借款、商城、账户四大核心模块交互设计。MVP 3个月内上线，用户注册转化率超行业基准 15%。',industry:'finance',skills:['strategy','ia','interaction'],emoji:'🏦',bg:'#e8edff'},
+  {id:2,title:'宁波花 APP 核心流程优化',desc:'基于用户特征识别借贷关键痛点，制定涵盖结构、品牌、交互等多维度优化策略，提升金融产品易用度与转化效率。',industry:'finance',skills:['research','strategy','interaction'],emoji:'💳',bg:'#eef0ff'},
+  {id:3,title:'山东城商行联盟 网银体验策略创新',desc:'主导5个核心业务流程概念重塑，重建导航结构与反馈机制，建立统一交互规范组件库，推广至联盟旗下全部银行。',industry:'finance',skills:['strategy','ia','interaction','visual'],emoji:'🏛',bg:'#f0eeff'},
+  {id:4,title:'浦惠到家 可用性评估及改版策略',desc:'通过用户访谈与行为轨迹分析，识别现有链路的体验断点，结合竞品分析与行业研究，输出系统化改版建议。',industry:'finance',skills:['research','strategy','ia'],emoji:'📊',bg:'#fff0ee'},
+  {id:5,title:'极氪汽车 全渠道数字触点策略',desc:'2000+ 定量问卷 + 20+ 深度访谈，主导极氪001官网改版及 APP/小程序等5大触点设计。官网用户平均留时长 +40%，UX Design Awards 2023 提名。',industry:'auto',skills:['research','strategy','interaction','visual'],emoji:'🚗',bg:'#eefff4',award:true},
+  {id:6,title:'全国工会 职工书屋 APP 策略升级',desc:'梳理阅读全链路需求，重新规划功能架构与核心场景，设计 AI 导读、阅读工具和成长体系等关键能力。',industry:'labor',skills:['research','strategy','ia','interaction'],emoji:'📚',bg:'#eef8ff'},
+  {id:7,title:'牛津艺术中心 网站设计优化',desc:'独立完成官网设计优化及品牌风格指南。上线3个月：浏览量 +15%，线上购票转化率 +200%。',industry:'culture',skills:['ia','interaction','visual'],emoji:'🎭',bg:'#fff0f8'},
+];
+const iLabel={finance:'金融',auto:'汽车',labor:'公共服务',culture:'文化艺术'};
+const sLabel={research:'用研',strategy:'产品策略',ia:'信息架构',interaction:'交互设计',visual:'视觉设计'};
+const ALL_INDUSTRIES = ['finance','auto','labor','culture'];
+const ALL_SKILLS     = ['research','strategy','ia','interaction','visual'];
+
+// State: null = "全部" mode; Set = specific selections
+let industryState = null; // null means "全部"
+let skillState    = null;
+
+function getActiveIndustries(){ return industryState === null ? ALL_INDUSTRIES : [...industryState]; }
+function getActiveSkills(){     return skillState    === null ? ALL_SKILLS     : [...skillState];    }
+
+function renderWork(){
+  const grid = document.getElementById('work-grid');
+  const ai = getActiveIndustries();
+  const as = getActiveSkills();
+  const f = projects.filter(p => ai.includes(p.industry) && p.skills.some(s => as.includes(s)));
+  if(!f.length){ grid.innerHTML='<div class="work-empty">// 暂无匹配项目</div>'; return; }
+  grid.innerHTML = f.map(p=>`
+    <div class="work-card" onclick="alert('「${p.title}」\n\n点击后将打开你上传的 PDF 案例文档。')">
+      <div class="work-thumb" style="background:${p.bg}">${p.emoji}</div>
+      <div class="work-body">
+        <div class="work-industry">${iLabel[p.industry]}${p.award?' · 🏆 UX Awards':''}</div>
+        <div class="work-title">${p.title}</div>
+        <div class="work-desc">${p.desc}</div>
+        <div class="work-tags">${p.skills.map(s=>`<span class="work-tag">${sLabel[s]}</span>`).join('')}${p.award?'<span class="work-tag award">🏆</span>':''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function syncUI(groupId, state, allValues){
+  const isAll = state === null;
+  const allBtn = document.querySelector(`#${groupId} .filter-all`);
+  // "全部" button: active only when isAll
+  allBtn.classList.toggle('active', isAll);
+  // individual buttons: active only when NOT isAll and in state set
+  document.querySelectorAll(`#${groupId} .filter-btn:not(.filter-all)`).forEach(b=>{
+    b.classList.toggle('active', !isAll && state.has(b.dataset.filter));
+  });
+  // clear button: show when in specific-select mode AND something is deselected
+  const row = document.getElementById(groupId).closest('.filter-row');
+  let clearBtn = row.querySelector('.filter-clear');
+  const showClear = !isAll && state.size < allValues.length;
+  if(showClear && !clearBtn){
+    clearBtn = document.createElement('button');
+    clearBtn.className = 'filter-clear';
+    clearBtn.textContent = '清除';
+    clearBtn.addEventListener('click', ()=>{
+      if(groupId==='industry-filter') industryState = null;
+      else skillState = null;
+      syncUI(groupId, groupId==='industry-filter'?industryState:skillState, allValues);
+      renderWork();
+    });
+    row.appendChild(clearBtn);
+  } else if(!showClear && clearBtn){
+    clearBtn.remove();
+  }
+}
+
+// Wire industry buttons
+document.querySelector('#industry-filter .filter-all').addEventListener('click',()=>{
+  industryState = null;
+  syncUI('industry-filter', industryState, ALL_INDUSTRIES);
+  renderWork();
+});
+document.querySelectorAll('#industry-filter .filter-btn:not(.filter-all)').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const v = btn.dataset.filter;
+    // entering specific-select mode
+    if(industryState === null) industryState = new Set(ALL_INDUSTRIES);
+    if(industryState.has(v)){
+      if(industryState.size === 1) return; // keep at least one
+      industryState.delete(v);
+    } else {
+      industryState.add(v);
+      // if all selected again, go back to "全部"
+      if(industryState.size === ALL_INDUSTRIES.length) industryState = null;
+    }
+    syncUI('industry-filter', industryState, ALL_INDUSTRIES);
+    renderWork();
+  });
+});
+
+// Wire skill buttons
+document.querySelector('#skill-filter .filter-all').addEventListener('click',()=>{
+  skillState = null;
+  syncUI('skill-filter', skillState, ALL_SKILLS);
+  renderWork();
+});
+document.querySelectorAll('#skill-filter .filter-btn:not(.filter-all)').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const v = btn.dataset.filter;
+    if(skillState === null) skillState = new Set(ALL_SKILLS);
+    if(skillState.has(v)){
+      if(skillState.size === 1) return;
+      skillState.delete(v);
+    } else {
+      skillState.add(v);
+      if(skillState.size === ALL_SKILLS.length) skillState = null;
+    }
+    syncUI('skill-filter', skillState, ALL_SKILLS);
+    renderWork();
+  });
+});
+
+// Scroll spy
+const navA = document.querySelectorAll('.nav-links a[href^="#"]');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) navA.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+e.target.id));
+  });
+},{threshold:0.35});
+['work','about','contact'].forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+
+// Init
+syncUI('industry-filter', industryState, ALL_INDUSTRIES);
+syncUI('skill-filter', skillState, ALL_SKILLS);
+renderWork();
+</script><script>
+const projects=[
+  {id:1,title:'建信消费金融 APP 0→1',desc:'策划3场跨部门策略工作坊，主导授信、借款、商城、账户四大核心模块交互设计。MVP 3个月内上线，用户注册转化率超行业基准 15%。',industry:'finance',skills:['strategy','ia','interaction'],emoji:'🏦',bg:'#e8edff'},
+  {id:2,title:'宁波花 APP 核心流程优化',desc:'基于用户特征识别借贷关键痛点，制定涵盖结构、品牌、交互等多维度优化策略，提升金融产品易用度与转化效率。',industry:'finance',skills:['research','strategy','interaction'],emoji:'💳',bg:'#eef0ff'},
+  {id:3,title:'山东城商行联盟 网银体验策略创新',desc:'主导5个核心业务流程概念重塑，重建导航结构与反馈机制，建立统一交互规范组件库，推广至联盟旗下全部银行。',industry:'finance',skills:['strategy','ia','interaction','visual'],emoji:'🏛',bg:'#f0eeff'},
+  {id:4,title:'浦惠到家 可用性评估及改版策略',desc:'通过用户访谈与行为轨迹分析，识别现有链路的体验断点，结合竞品分析与行业研究，输出系统化改版建议。',industry:'finance',skills:['research','strategy','ia'],emoji:'📊',bg:'#fff0ee'},
+  {id:5,title:'极氪汽车 全渠道数字触点策略',desc:'2000+ 定量问卷 + 20+ 深度访谈，主导极氪001官网改版及 APP/小程序等5大触点设计。官网用户平均留时长 +40%，UX Design Awards 2023 提名。',industry:'auto',skills:['research','strategy','interaction','visual'],emoji:'🚗',bg:'#eefff4',award:true},
+  {id:6,title:'全国工会 职工书屋 APP 策略升级',desc:'梳理阅读全链路需求，重新规划功能架构与核心场景，设计 AI 导读、阅读工具和成长体系等关键能力。',industry:'labor',skills:['research','strategy','ia','interaction'],emoji:'📚',bg:'#eef8ff'},
+  {id:7,title:'牛津艺术中心 网站设计优化',desc:'独立完成官网设计优化及品牌风格指南。上线3个月：浏览量 +15%，线上购票转化率 +200%。',industry:'culture',skills:['ia','interaction','visual'],emoji:'🎭',bg:'#fff0f8'},
+];
+const iLabel={finance:'金融',auto:'汽车',labor:'公共服务',culture:'文化艺术'};
+const sLabel={research:'用研',strategy:'产品策略',ia:'信息架构',interaction:'交互设计',visual:'视觉设计'};
+
+// --- FILTER STATE: Set of active values per group ---
+const activeIndustries = new Set(['finance','auto','labor','culture']);
+const activeSkills     = new Set(['research','strategy','ia','interaction','visual']);
+
+function renderWork(){
+  const grid = document.getElementById('work-grid');
+  const f = projects.filter(p =>
+    activeIndustries.has(p.industry) &&
+    p.skills.some(s => activeSkills.has(s))
+  );
+  if(!f.length){
+    grid.innerHTML='<div class="work-empty">// 暂无匹配项目</div>';
+    return;
+  }
+  grid.innerHTML = f.map(p=>`
+    <div class="work-card" onclick="alert('「${p.title}」\n\n点击后将打开你上传的 PDF 案例文档。')">
+      <div class="work-thumb" style="background:${p.bg}">${p.emoji}</div>
+      <div class="work-body">
+        <div class="work-industry">${iLabel[p.industry]}${p.award?' · 🏆 UX Awards':''}</div>
+        <div class="work-title">${p.title}</div>
+        <div class="work-desc">${p.desc}</div>
+        <div class="work-tags">${p.skills.map(s=>`<span class="work-tag">${sLabel[s]}</span>`).join('')}${p.award?'<span class="work-tag award">🏆</span>':''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function syncButtons(){
+  document.querySelectorAll('#industry-filter .filter-btn').forEach(b=>{
+    b.classList.toggle('active', activeIndustries.has(b.dataset.filter));
+  });
+  document.querySelectorAll('#skill-filter .filter-btn').forEach(b=>{
+    b.classList.toggle('active', activeSkills.has(b.dataset.filter));
+  });
+  updateClearBtn('industry-filter', activeIndustries, ['finance','auto','labor','culture']);
+  updateClearBtn('skill-filter',    activeSkills,     ['research','strategy','ia','interaction','visual']);
+}
+
+function updateClearBtn(groupId, activeSet, allValues){
+  const wrap = document.getElementById(groupId).closest('.filter-row');
+  let clearBtn = wrap.querySelector('.filter-clear');
+  // show clear button only if something is deselected
+  const someDeselected = allValues.some(v => !activeSet.has(v));
+  if(someDeselected){
+    if(!clearBtn){
+      clearBtn = document.createElement('button');
+      clearBtn.className = 'filter-clear';
+      clearBtn.textContent = '清除';
+      clearBtn.addEventListener('click', ()=>{
+        allValues.forEach(v => activeSet.add(v));
+        syncButtons(); renderWork();
+      });
+      wrap.appendChild(clearBtn);
+    }
+  } else {
+    if(clearBtn) clearBtn.remove();
+  }
+}
+
+// Wire up buttons — toggle on click, keep at least one active
+document.querySelectorAll('#industry-filter .filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const v = btn.dataset.filter;
+    if(activeIndustries.has(v) && activeIndustries.size === 1) return;
+    activeIndustries.has(v) ? activeIndustries.delete(v) : activeIndustries.add(v);
+    syncButtons(); renderWork();
+  });
+});
+document.querySelectorAll('#skill-filter .filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const v = btn.dataset.filter;
+    if(activeSkills.has(v) && activeSkills.size === 1) return;
+    activeSkills.has(v) ? activeSkills.delete(v) : activeSkills.add(v);
+    syncButtons(); renderWork();
+  });
+});
+
+// Scroll spy
+const navA = document.querySelectorAll('.nav-links a[href^="#"]');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) navA.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+e.target.id));
+  });
+},{threshold:0.35});
+['work','about','contact'].forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+
+syncButtons();
+renderWork();
+</script><script>
+const projects=[
+  {id:1,title:'建信消费金融 APP 0→1',desc:'策划3场跨部门策略工作坊，主导授信、借款、商城、账户四大核心模块交互设计。MVP 3个月内上线，用户注册转化率超行业基准 15%。',industry:'finance',skills:['strategy','ia','interaction'],emoji:'🏦',bg:'#e8edff'},
+  {id:2,title:'宁波花 APP 核心流程优化',desc:'基于用户特征识别借贷关键痛点，制定涵盖结构、品牌、交互等多维度优化策略，提升金融产品易用度与转化效率。',industry:'finance',skills:['research','strategy','interaction'],emoji:'💳',bg:'#eef0ff'},
+  {id:3,title:'山东城商行联盟 网银体验策略创新',desc:'主导5个核心业务流程概念重塑，重建导航结构与反馈机制，建立统一交互规范组件库，推广至联盟旗下全部银行。',industry:'finance',skills:['strategy','ia','interaction','visual'],emoji:'🏛',bg:'#f0eeff'},
+  {id:4,title:'浦惠到家 可用性评估及改版策略',desc:'通过用户访谈与行为轨迹分析，识别现有链路的体验断点，结合竞品分析与行业研究，输出系统化改版建议。',industry:'finance',skills:['research','strategy','ia'],emoji:'📊',bg:'#fff0ee'},
+  {id:5,title:'极氪汽车 全渠道数字触点策略',desc:'2000+ 定量问卷 + 20+ 深度访谈，主导极氪001官网改版及 APP/小程序等5大触点设计。官网用户平均留时长 +40%，UX Design Awards 2023 提名。',industry:'auto',skills:['research','strategy','interaction','visual'],emoji:'🚗',bg:'#eefff4',award:true},
+  {id:6,title:'全国工会 职工书屋 APP 策略升级',desc:'梳理阅读全链路需求，重新规划功能架构与核心场景，设计 AI 导读、阅读工具和成长体系等关键能力。',industry:'labor',skills:['research','strategy','ia','interaction'],emoji:'📚',bg:'#eef8ff'},
+  {id:7,title:'牛津艺术中心 网站设计优化',desc:'独立完成官网设计优化及品牌风格指南。上线3个月：浏览量 +15%，线上购票转化率 +200%。',industry:'culture',skills:['ia','interaction','visual'],emoji:'🎭',bg:'#fff0f8'},
+];
+const iLabel={finance:'金融',auto:'汽车',labor:'公共服务',culture:'文化艺术'};
+const sLabel={research:'用研',strategy:'产品策略',ia:'信息架构',interaction:'交互设计',visual:'视觉设计'};
+function renderWork(){
+  const grid=document.getElementById('work-grid');
+  const activeIndustries=[...document.getElementById('industry-filter').querySelectorAll('.filter-btn.active')].map(b=>b.dataset.filter);
+  const activeSkills=[...document.getElementById('skill-filter').querySelectorAll('.filter-btn.active')].map(b=>b.dataset.filter);
+  const f=projects.filter(p=>activeIndustries.includes(p.industry)&&p.skills.some(s=>activeSkills.includes(s)));
+  if(!f.length){grid.innerHTML='<div class="work-empty">// 暂无匹配项目</div>';return;}
+  grid.innerHTML=f.map(p=>`
+    <div class="work-card" onclick="alert('「${p.title}」\\n\\n点击后将打开你上传的 PDF 案例文档。')">
+      <div class="work-thumb" style="background:${p.bg}">${p.emoji}</div>
+      <div class="work-body">
+        <div class="work-industry">${iLabel[p.industry]}${p.award?' · 🏆 UX Awards':''}</div>
+        <div class="work-title">${p.title}</div>
+        <div class="work-desc">${p.desc}</div>
+        <div class="work-tags">${p.skills.map(s=>`<span class="work-tag">${sLabel[s]}</span>`).join('')}${p.award?'<span class="work-tag award">🏆</span>':''}</div>
+      </div>
+    </div>`).join('');
+}
+
+document.getElementById('industry-filter').querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    industryF=btn.dataset.filter;
+    document.getElementById('industry-filter').querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');renderWork();
+  });
+});
+document.getElementById('skill-filter').querySelectorAll('.filter-b
