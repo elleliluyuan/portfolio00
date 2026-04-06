@@ -209,7 +209,8 @@ function generateShareFromManual() {
   const checked = [...document.querySelectorAll('#match-project-list input:checked')];
   if (!checked.length) { alert('请至少选择一个项目'); return; }
   const ids = checked.map(cb => parseInt(cb.value));
-  showSharePage(ids, '您指定的岗位', '');
+  const job = document.getElementById('manual-job-title').value.trim() || '该岗位';
+  showSharePage(ids, job, '');
   closeMatchModal();
 }
 async function runAIMatch() {
