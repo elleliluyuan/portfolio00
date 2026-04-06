@@ -295,7 +295,7 @@ function copyShareLink() {
     setTimeout(() => btn.textContent = orig, 2000);
   });
 }
-(function checkSharePage() {
+document.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(location.search);
   const shareParam = params.get('share');
   if (!shareParam) return;
@@ -303,4 +303,4 @@ function copyShareLink() {
   const job = params.get('job') || '该岗位';
   const reason = params.get('reason') || '';
   if (ids.length) showSharePage(ids, job, reason);
-})();
+});
