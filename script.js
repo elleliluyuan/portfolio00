@@ -22,8 +22,8 @@ function matchIndustry(p){return industryState===null||(Array.isArray(p.industry
 function matchSkill(p){return skillState===null||p.skills.some(s=>skillState.has(s));}
 
 // ── PDF DATA ──
-const projectPDFs={get 1(){ return document.getElementById('_pdf1')?.textContent||null; },get 2(){ return document.getElementById('_pdf2')?.textContent||null; }};
-const projectPDFUrls={3:'https://drive.google.com/file/d/1W5t4AitM9Lu5jnS_cOzdvrCKaLr9Rqrb/preview'};
+const projectPDFs={get 1(){ return document.getElementById('_pdf1')?.textContent||null; }};
+const projectPDFUrls={2:'https://portfolio-pdf-1317896689.cos.ap-guangzhou.myqcloud.com/%E6%9E%81%E6%B0%AA.pdf',3:'https://drive.google.com/file/d/1W5t4AitM9Lu5jnS_cOzdvrCKaLr9Rqrb/preview'};
 
 function buildCard(p){
   const coverSrc = p.cover || null;
@@ -183,72 +183,123 @@ syncFilterUI('industry-filter',null,ALL_INDUSTRIES);
 syncFilterUI('skill-filter',null,ALL_SKILLS);
 renderWork();
 
-// JD inline input enter key
-document.addEventListener('DOMContentLoaded',()=>{
-  const inline=document.getElementById('jd-inline');
-  if(inline){
-    inline.addEventListener('keydown',function(e){
-      if(e.key==='Enter'&&!e.shiftKey){
-        e.preventDefault();
-        const val=this.value.trim();
-        if(val){document.getElementById('jd-textarea').value=val;runAIMatch();}
-      }
-    });
-  }
-});
+// ── MATCH MODAL ──
+let _aiMatchData = null;
 
-// JD Modal
-function openJDModal(){
-  document.getElementById('jd-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('jd-textarea').focus(),50);
+function openMatchModal() {
+  const list = document.getElementById('match-project-list');
+  list.innerHTML = projects.map(p =>
+    '<label class="match-project-item"><input type="checkbox" value="'+p.id+'"><span>'+p.title+'</span></label>'
+  ).join('');
+  document.getElementById('match-modal').classList.add('open');
 }
-function closeJDModal(){
-  document.getElementById('jd-modal').classList.remove('open');
+function closeMatchModal() {
+  document.getElementById('match-modal').classList.remove('open');
 }
-document.addEventListener('click',function(e){
-  const modal=document.getElementById('jd-modal');
-  if(e.target===modal) closeJDModal();
+document.addEventListener('click', function(e) {
+  if (e.target === document.getElementById('match-modal')) closeMatchModal();
 });
-
-async function runAIMatch(){
-  const jd=document.getElementById('jd-textarea').value.trim();
-  if(!jd){document.getElementById('jd-textarea').focus();return;}
-  const runBtn=document.getElementById('modal-run-btn');
-  const resultBar=document.getElementById('ai-match-result');
-  runBtn.textContent='分析中…';runBtn.classList.add('loading');
-  const projectList=projects.map(p=>'['+p.id+'] '+p.title+'（'+iLabel[p.industry]+'，技能：'+p.skills.map(s=>sLabel[s]).join('、')+'）：'+p.desc).join('\n');
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:300,
-        system:'你是一个帮助招聘方快速了解候选人作品集的助手。根据用户提供的JD，从候选人的项目列表中找出最相关的1-3个项目，说明匹配原因（1句话），输出格式为JSON：{"matched_ids":[1,2],"reason":"..."}，只输出JSON不要其他内容。',
-        messages:[{role:'user',content:'JD内容：\n'+jd+'\n\n候选人项目列表：\n'+projectList}]
+function switchMatchTab(tab) {
+  document.getElementById('panel-manual').style.display = tab === 'manual' ? 'block' : 'none';
+  document.getElementById('panel-ai').style.display = tab === 'ai' ? 'block' : 'none';
+  document.getElementById('tab-btn-manual').classList.toggle('active', tab === 'manual');
+  document.getElementById('tab-btn-ai').classList.toggle('active', tab === 'ai');
+}
+function generateShareFromManual() {
+  const checked = [...document.querySelectorAll('#match-project-list input:checked')];
+  if (!checked.length) { alert('请至少选择一个项目'); return; }
+  const ids = checked.map(cb => parseInt(cb.value));
+  showSharePage(ids, '您指定的岗位', '');
+  closeMatchModal();
+}
+async function runAIMatch() {
+  const jd = document.getElementById('jd-textarea').value.trim();
+  if (!jd) { document.getElementById('jd-textarea').focus(); return; }
+  const runBtn = document.getElementById('modal-run-btn');
+  const resultDiv = document.getElementById('ai-result-modal');
+  runBtn.textContent = '分析中…'; runBtn.disabled = true;
+  resultDiv.style.display = 'none'; resultDiv.classList.remove('visible');
+  document.getElementById('modal-share-btn').classList.remove('visible');
+  const projectList = projects.map(p => {
+    const ind = Array.isArray(p.industry) ? p.industry.map(i => iLabel[i]||i).join('/') : (iLabel[p.industry]||p.industry);
+    return '['+p.id+'] '+p.title+'（'+ind+'，技能：'+p.skills.map(s=>sLabel[s]||s).join('、')+'）：'+p.desc;
+  }).join('\n');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','x-api-key':window._anthropicKey||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001', max_tokens: 400,
+        system: '你是帮助招聘方了解候选人作品集的助手。根据JD从项目列表找出最相关的2-3个项目，并从JD提取岗位名称。只输出JSON：{"matched_ids":[1,2],"job_title":"产品设计师","reason":"一句话说明匹配原因"}',
+        messages: [{role:'user', content:'JD：\n'+jd+'\n\n项目列表：\n'+projectList}]
       })
     });
-    const data=await res.json();
-    const text=data.content.map(c=>c.text||'').join('');
-    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
-    closeJDModal();
-    highlightMatched(parsed.matched_ids,parsed.reason);
-  }catch(e){
-    resultBar.textContent='匹配失败，请稍后重试。';resultBar.classList.add('visible');
+    const data = await res.json();
+    const text = data.content.map(c=>c.text||'').join('');
+    _aiMatchData = JSON.parse(text.replace(/```json|```/g,'').trim());
+    const names = _aiMatchData.matched_ids.map(id=>projects.find(p=>p.id===id)?.title).filter(Boolean).join('、');
+    resultDiv.textContent = '推荐项目：' + names + '\n匹配原因：' + _aiMatchData.reason;
+    resultDiv.style.display = 'block'; resultDiv.classList.add('visible');
+    document.getElementById('modal-share-btn').classList.add('visible');
+  } catch(err) {
+    resultDiv.textContent = '匹配失败，请检查网络或稍后重试。';
+    resultDiv.style.display = 'block'; resultDiv.classList.add('visible');
+    _aiMatchData = null;
   }
-  runBtn.textContent='开始匹配 →';runBtn.classList.remove('loading');
+  runBtn.textContent = '重新匹配 →'; runBtn.disabled = false;
 }
-
-function highlightMatched(ids,reason){
-  const resultBar=document.getElementById('ai-match-result');
-  const matchedSet=new Set(ids);
-  document.querySelectorAll('.work-card').forEach(card=>{
-    const title=card.querySelector('.work-title')?.textContent||'';
-    const proj=projects.find(p=>p.title===title);
-    if(!proj) return;
-    if(matchedSet.has(proj.id)){card.style.opacity='1';card.style.outline='2px solid var(--red)';card.querySelector('.work-thumb img')?.style.setProperty('filter','grayscale(0)','important');}
-    else{card.style.opacity='0.28';card.style.outline='none';}
+function generateShareFromAI() {
+  if (!_aiMatchData) return;
+  showSharePage(_aiMatchData.matched_ids, _aiMatchData.job_title||'该岗位', _aiMatchData.reason||'');
+  closeMatchModal();
+}
+function generateShareURL(ids, job, reason) {
+  const url = new URL(location.href);
+  url.search = '';
+  url.searchParams.set('share', ids.join(','));
+  url.searchParams.set('job', job);
+  if (reason) url.searchParams.set('reason', reason);
+  return url.toString();
+}
+function showSharePage(ids, job, reason) {
+  const url = generateShareURL(ids, job, reason);
+  history.pushState({}, '', url);
+  document.getElementById('share-job-name').textContent = job;
+  const reasonEl = document.getElementById('share-reason-text');
+  reasonEl.textContent = reason || '';
+  reasonEl.style.display = reason ? 'block' : 'none';
+  const matched = projects.filter(p => ids.includes(p.id));
+  const grid = document.getElementById('share-cards');
+  grid.innerHTML = matched.map(p => buildCard(p)).join('');
+  grid.querySelectorAll('.work-card').forEach(card => {
+    const img = card.querySelector('.thumb-img');
+    if (img) { img.style.filter='grayscale(1)'; card.addEventListener('mouseenter',()=>img.style.filter='grayscale(0)'); card.addEventListener('mouseleave',()=>img.style.filter='grayscale(1)'); }
+    card.addEventListener('click', () => {
+      const id = parseInt(card.dataset.id);
+      if (projectPDFs[id]||projectPDFUrls[id]) { const proj=projects.find(p=>p.id===id); openPDFModal(id,proj?.title||''); }
+    });
   });
-  const names=ids.map(id=>projects.find(p=>p.id===id)?.title).filter(Boolean).join('、');
-  resultBar.textContent='AI 推荐：'+names+' — '+reason;
-  resultBar.classList.add('visible');
-  document.getElementById('ai-match-btn').textContent='重新匹配 →';
+  document.getElementById('share-overlay').style.display = 'block';
+  window.scrollTo(0, 0);
 }
+function closeShareOverlay() {
+  document.getElementById('share-overlay').style.display = 'none';
+  history.pushState({}, '', location.pathname);
+}
+function copyShareLink() {
+  navigator.clipboard.writeText(location.href).then(() => {
+    const btn = document.querySelector('.share-copy-btn');
+    const orig = btn.textContent;
+    btn.textContent = '已复制 ✓';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+(function checkSharePage() {
+  const params = new URLSearchParams(location.search);
+  const shareParam = params.get('share');
+  if (!shareParam) return;
+  const ids = shareParam.split(',').map(Number).filter(Boolean);
+  const job = params.get('job') || '该岗位';
+  const reason = params.get('reason') || '';
+  if (ids.length) showSharePage(ids, job, reason);
+})();
