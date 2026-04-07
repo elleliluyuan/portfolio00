@@ -25,6 +25,8 @@ function matchSkill(p){return skillState===null||p.skills.some(s=>skillState.has
 const projectPDFs={get 1(){ return document.getElementById('_pdf1')?.textContent||null; }};
 const projectPDFUrls={2:'https://portfolio-pdf-1317896689.cos.ap-guangzhou.myqcloud.com/%E6%9E%81%E6%B0%AA.pdf',3:'https://drive.google.com/file/d/1W5t4AitM9Lu5jnS_cOzdvrCKaLr9Rqrb/preview'};
 
+// Bento grid size map — wide cards at positions 1,6,11 keep every row filled (2+1 or 1+1+1)
+const bentoSizes={1:'wide',6:'wide',11:'wide'};
 function buildCard(p){
   const coverSrc = p.cover || null;
   const thumbContent = coverSrc
@@ -33,9 +35,7 @@ function buildCard(p){
   const tagLabels = (Array.isArray(p.industry)?p.industry:([p.industry])).map(i=>'<span class="work-tag">'+(iLabel[i]||i)+'</span>').join('');
   const skillTags = p.skills.map(s=>'<span class="work-tag">'+(sLabel[s]||s)+'</span>').join('');
   const awardTag = p.award?'<span class="work-tag award">🏆</span>':'';
-  // web 项目宽卡（col-span 2），app 项目保持窄卡（单列）
-  const isWeb = Array.isArray(p.industry)?p.industry.includes('web'):p.industry==='web';
-  const sizeClass = isWeb?' bento-wide':'';
+  const sizeClass = bentoSizes[p.id]?' bento-'+bentoSizes[p.id]:'';
   return '<div class="work-card'+sizeClass+'" data-id="'+p.id+'">'
     +'<div class="work-thumb">'
     +'<div class="work-card-label">'+p.title+'</div>'
