@@ -27,23 +27,19 @@ const projectPDFUrls={2:'https://portfolio-pdf-1317896689.cos.ap-guangzhou.myqcl
 
 function buildCard(p){
   const coverSrc = p.cover || null;
-  const thumbHTML = coverSrc
-    ? '<img src="'+coverSrc+'" class="thumb-img" style="width:100%;height:190px;object-fit:cover;display:block;filter:grayscale(1);transition:filter .3s;">'
-    : '<span style="font-size:52px">'+(p.emoji||'📁')+'</span>';
-  const thumbStyle = coverSrc?'padding:0;overflow:hidden;background:#eef0ff;':'background:'+(p.bg||'#eef0ff')+';';
-  const tagLabels = p.tags
-    ? p.tags.map(t=>'<span class="work-tag-label">'+t+'</span>').join('')
-    : (Array.isArray(p.industry)?p.industry:([p.industry])).map(i=>'<span class="work-tag-label">'+(iLabel[i]||i)+'</span>').join('');
-  const skillTags = p.skills.map(s=>'<span class="work-tag">'+sLabel[s]+'</span>').join('');
+  const thumbContent = coverSrc
+    ? '<img src="'+coverSrc+'" class="thumb-img">'
+    : '<div class="thumb-placeholder"><span>'+(p.emoji||'📁')+'</span></div>';
+  const tagLabels = (Array.isArray(p.industry)?p.industry:([p.industry])).map(i=>'<span class="work-tag">'+(iLabel[i]||i)+'</span>').join('');
+  const skillTags = p.skills.map(s=>'<span class="work-tag">'+(sLabel[s]||s)+'</span>').join('');
   const awardTag = p.award?'<span class="work-tag award">🏆</span>':'';
   return '<div class="work-card" data-id="'+p.id+'">'
-    +'<div class="work-thumb" style="'+thumbStyle+'">'+thumbHTML+'</div>'
-    +'<div class="work-body">'
-    +'<div class="work-tag-row">'+tagLabels+'</div>'
-    +'<div class="work-title">'+p.title+'</div>'
-    +'<div class="work-desc">'+p.desc+'</div>'
-    +'<div class="work-tags">'+skillTags+awardTag+'</div>'
-    +'</div></div>';
+    +'<div class="work-thumb">'
+    +'<div class="work-card-label">'+p.title+'</div>'
+    +thumbContent
+    +'</div>'
+    +'<div class="work-card-footer">'+tagLabels+skillTags+awardTag+'</div>'
+    +'</div>';
 }
 
 function renderWork(){
@@ -51,12 +47,6 @@ function renderWork(){
   const f=projects.filter(p=>matchIndustry(p)&&matchSkill(p));
   if(!f.length){grid.innerHTML='<div class="work-empty">// 暂无匹配项目</div>';return;}
   grid.innerHTML=f.map(p=>buildCard(p)).join('');
-  grid.querySelectorAll('.work-card').forEach(card=>{
-    const img=card.querySelector('.thumb-img');
-    if(!img) return;
-    card.addEventListener('mouseenter',()=>img.style.filter='grayscale(0)');
-    card.addEventListener('mouseleave',()=>{if(!card.classList.contains('selected'))img.style.filter='grayscale(1)';});
-  });
 }
 
 // Event delegation — survives re-renders
