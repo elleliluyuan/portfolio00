@@ -104,10 +104,24 @@ nav {
    INTRO
 ══════════════════════════════════ */
 .intro {
-  text-align: center;
   padding: 80px var(--pad) 64px;
-  max-width: 900px;
+  max-width: 1220px;
   margin: 0 auto;
+}
+.intro-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  background: #eeecea;
+  vertical-align: middle;
+  margin-right: 0.25em;
+  position: relative;
+  top: -0.06em;
+  overflow: hidden;
+  font-size: 0.75em;
 }
 .intro p:first-child {
   font-size: clamp(22px, 3vw, 34px);

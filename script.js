@@ -145,6 +145,8 @@ document.querySelectorAll('#skill-filter .filter-btn').forEach(btn=>{
 
 const navLinks=document.querySelectorAll('.nav-pill a[href^="#"]');
 const navHomeBtn=document.querySelector('.nav-home-btn');
+// rootMargin '-45% 0px -45% 0px' creates a thin band at the center of the viewport;
+// whichever section is in that band becomes active
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(e.isIntersecting){
@@ -152,16 +154,15 @@ const obs=new IntersectionObserver(entries=>{
       if(navHomeBtn) navHomeBtn.classList.remove('active');
     }
   });
-},{threshold:0.3});
+},{rootMargin:'-45% 0px -45% 0px',threshold:0});
 ['work','about','contact'].forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
-// Home button active when scrolled near top
 window.addEventListener('scroll',()=>{
   if(window.scrollY<100){
     navLinks.forEach(a=>a.classList.remove('active'));
     if(navHomeBtn) navHomeBtn.classList.add('active');
   }
 },{passive:true});
-if(navHomeBtn) navHomeBtn.classList.add('active'); // default on load
+if(navHomeBtn) navHomeBtn.classList.add('active');
 
 syncFilterUI();
 renderWork();
