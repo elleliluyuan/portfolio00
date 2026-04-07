@@ -112,47 +112,53 @@ nav {
 
 /* FILTERS */
 .work-filters-wrap {
-  padding: 16px 0 14px;
+  padding: 20px 0 18px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   margin-bottom: 1px;
 }
-.filter-row { display: flex; align-items: center; gap: 6px; }
-.filter-label {
-  font-size: 11px;
-  opacity: 0.3;
-  white-space: nowrap;
-  width: 44px;
-  flex-shrink: 0;
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.filter-group { display: flex; gap: 4px; flex-wrap: wrap; }
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-label { display: none; }
+.filter-group { display: flex; gap: 6px; flex-wrap: nowrap; }
 .filter-btn {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 12px;
   font-weight: 400;
-  padding: 3px 12px;
-  border: 1px solid transparent;
-  background: none;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(48,48,48,0.18);
+  background: transparent;
   color: var(--dark);
-  opacity: 0.38;
   cursor: pointer;
-  transition: opacity .15s, border-color .15s;
   white-space: nowrap;
+  transition: background .15s, color .15s, border-color .15s;
 }
-.filter-btn:hover { opacity: 0.75; }
-.filter-btn.active { opacity: 1; border: 1px solid var(--dark); }
+.filter-btn:hover { border-color: rgba(48,48,48,0.45); }
+.filter-btn.active {
+  background: #7B61FF;
+  color: #fff;
+  border-color: transparent;
+}
 .filter-clear {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  padding: 3px 10px;
-  margin-left: 4px;
-  border: 1px solid var(--dark);
-  background: none;
+  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(48,48,48,0.18);
+  background: transparent;
   color: var(--dark);
   cursor: pointer;
-  opacity: 0.55;
+  white-space: nowrap;
+  opacity: 0.5;
   transition: opacity .15s;
 }
 .filter-clear:hover { opacity: 1; }
