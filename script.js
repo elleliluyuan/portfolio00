@@ -25,8 +25,8 @@ function matchSkill(p){return skillState===null||p.skills.some(s=>skillState.has
 const projectPDFs={get 1(){ return document.getElementById('_pdf1')?.textContent||null; }};
 const projectPDFUrls={2:'https://portfolio-pdf-1317896689.cos.ap-guangzhou.myqcloud.com/%E6%9E%81%E6%B0%AA.pdf',3:'https://drive.google.com/file/d/1W5t4AitM9Lu5jnS_cOzdvrCKaLr9Rqrb/preview'};
 
-// Bento grid size map — wide cards at positions 1,6,11 keep every row filled (2+1 or 1+1+1)
-const bentoSizes={1:'wide',6:'wide',11:'wide'};
+// Bento grid size map: wide = col-span 2, tall = row-span 2
+const bentoSizes={1:'wide',3:'tall',5:'wide',8:'wide',10:'tall',12:'wide'};
 function buildCard(p){
   const coverSrc = p.cover || null;
   const thumbContent = coverSrc
