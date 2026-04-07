@@ -143,14 +143,27 @@ document.querySelectorAll('#skill-filter .filter-btn').forEach(btn=>{
   });
 });
 
-const navA=document.querySelectorAll('.nav-center a[href^="#"]');
+const navLinks=document.querySelectorAll('.nav-pill a[href^="#"]');
+const navHomeBtn=document.querySelector('.nav-home-btn');
 const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)navA.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));});
-},{threshold:0.35});
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
+      if(navHomeBtn) navHomeBtn.classList.remove('active');
+    }
+  });
+},{threshold:0.3});
 ['work','about','contact'].forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+// Home button active when scrolled near top
+window.addEventListener('scroll',()=>{
+  if(window.scrollY<100){
+    navLinks.forEach(a=>a.classList.remove('active'));
+    if(navHomeBtn) navHomeBtn.classList.add('active');
+  }
+},{passive:true});
+if(navHomeBtn) navHomeBtn.classList.add('active'); // default on load
 
-syncFilterUI('industry-filter',null,ALL_INDUSTRIES);
-syncFilterUI('skill-filter',null,ALL_SKILLS);
+syncFilterUI();
 renderWork();
 
 // ── MATCH MODAL ──
