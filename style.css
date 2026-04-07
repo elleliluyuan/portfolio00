@@ -114,19 +114,23 @@ nav {
 .work-filters-wrap {
   padding: 20px 0 18px;
   border-bottom: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   margin-bottom: 1px;
 }
 .filter-row {
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+.filter-scroll {
+  display: flex;
+  align-items: center;
   gap: 6px;
+  flex: 1;
   overflow-x: auto;
   scrollbar-width: none;
+  min-width: 0;
 }
-.filter-row::-webkit-scrollbar { display: none; }
+.filter-scroll::-webkit-scrollbar { display: none; }
 .filter-label { display: none; }
 .filter-group { display: flex; gap: 6px; flex-wrap: nowrap; }
 .filter-btn {

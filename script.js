@@ -89,80 +89,57 @@ function closePDFModal(){
   if(_pdfBlobUrl){ URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null; }
 }
 
-function syncFilterUI(groupId,state,allValues){
-  const isAll=state===null;
-  document.querySelector('#'+groupId+' .filter-all').classList.toggle('active',isAll);
-  document.querySelectorAll('#'+groupId+' .filter-btn:not(.filter-all)').forEach(b=>{
-    b.classList.toggle('active',!isAll&&state.has(b.dataset.filter));
+function syncFilterUI(){
+  const anyActive=industryState!==null||skillState!==null;
+  // "全部" active only when nothing selected
+  document.getElementById('filter-all-btn').classList.toggle('active',!anyActive);
+  // industry buttons
+  document.querySelectorAll('#industry-filter .filter-btn').forEach(b=>{
+    b.classList.toggle('active',industryState!==null&&industryState.has(b.dataset.filter));
   });
-  const row=document.getElementById(groupId).closest('.filter-row');
-  let clearBtn=row.querySelector('.filter-clear');
-  const showClear=!isAll&&state.size<allValues.length;
-  if(showClear&&!clearBtn){
-    clearBtn=document.createElement('button');
-    clearBtn.className='filter-clear';
-    clearBtn.textContent='清除';
-    clearBtn.addEventListener('click',()=>{
-      if(groupId==='industry-filter') industryState=null;
-      else skillState=null;
-      syncFilterUI(groupId,null,allValues);
-      renderWork();
-    });
-    row.appendChild(clearBtn);
-  }else if(!showClear&&clearBtn){clearBtn.remove();}
+  // skill buttons
+  document.querySelectorAll('#skill-filter .filter-btn').forEach(b=>{
+    b.classList.toggle('active',skillState!==null&&skillState.has(b.dataset.filter));
+  });
+  // global clear button
+  const clearBtn=document.getElementById('filter-clear-all');
+  if(clearBtn) clearBtn.style.display=anyActive?'':'none';
 }
 
-function wireGroup(groupId,allValues,getState,setState){
-  document.querySelector('#'+groupId+' .filter-all').addEventListener('click',()=>{
-    setState(null);
-    syncFilterUI(groupId,getState(),allValues);
-    renderWork();
-  });
-  document.querySelectorAll('#'+groupId+' .filter-btn:not(.filter-all)').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const v=btn.dataset.filter;
-      let s=getState();
-      if(s===null){s=new Set([v]);}
-      else{
-        if(s.has(v)){if(s.size===1)return;s.delete(v);}
-        else{s.add(v);}
-      }
-      setState(s);
-      syncFilterUI(groupId,getState(),allValues);
-      renderWork();
-    });
-  });
-}
 
-// Wire industry filter directly
-document.querySelector('#industry-filter .filter-all').addEventListener('click',()=>{
-  industryState=null; syncFilterUI('industry-filter',null,ALL_INDUSTRIES); renderWork();
+// 全部 button — reset all filters
+document.getElementById('filter-all-btn').addEventListener('click',()=>{
+  industryState=null; skillState=null; syncFilterUI(); renderWork();
 });
-document.querySelectorAll('#industry-filter .filter-btn:not(.filter-all)').forEach(btn=>{
+
+// Global clear button
+document.getElementById('filter-clear-all').addEventListener('click',()=>{
+  industryState=null; skillState=null; syncFilterUI(); renderWork();
+});
+
+// Industry buttons
+document.querySelectorAll('#industry-filter .filter-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const v=btn.dataset.filter;
     if(industryState===null) industryState=new Set([v]);
     else{
-      if(industryState.has(v)){if(industryState.size===1)return; industryState.delete(v);}
+      if(industryState.has(v)){if(industryState.size===1){industryState=null;}else{industryState.delete(v);}}
       else{ industryState.add(v); }
     }
-    syncFilterUI('industry-filter',industryState,ALL_INDUSTRIES); renderWork();
+    syncFilterUI(); renderWork();
   });
 });
 
-// Wire skill filter directly
-document.querySelector('#skill-filter .filter-all').addEventListener('click',()=>{
-  skillState=null; syncFilterUI('skill-filter',null,ALL_SKILLS); renderWork();
-});
-document.querySelectorAll('#skill-filter .filter-btn:not(.filter-all)').forEach(btn=>{
+// Skill buttons
+document.querySelectorAll('#skill-filter .filter-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const v=btn.dataset.filter;
     if(skillState===null) skillState=new Set([v]);
     else{
-      if(skillState.has(v)){if(skillState.size===1)return; skillState.delete(v);}
+      if(skillState.has(v)){if(skillState.size===1){skillState=null;}else{skillState.delete(v);}}
       else{ skillState.add(v); }
     }
-    syncFilterUI('skill-filter',skillState,ALL_SKILLS); renderWork();
+    syncFilterUI(); renderWork();
   });
 });
 
