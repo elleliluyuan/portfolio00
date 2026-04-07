@@ -26,7 +26,7 @@ const projectPDFs={get 1(){ return document.getElementById('_pdf1')?.textContent
 const projectPDFUrls={2:'https://portfolio-pdf-1317896689.cos.ap-guangzhou.myqcloud.com/%E6%9E%81%E6%B0%AA.pdf',3:'https://drive.google.com/file/d/1W5t4AitM9Lu5jnS_cOzdvrCKaLr9Rqrb/preview'};
 
 // Bento grid size map: wide = col-span 2, tall = row-span 2
-const bentoSizes={1:'wide',3:'tall',5:'wide',8:'wide',10:'tall',12:'wide'};
+const bentoSizes={1:'wide',3:'tall',9:'tall'};
 function buildCard(p){
   const coverSrc = p.cover || null;
   const thumbContent = coverSrc
