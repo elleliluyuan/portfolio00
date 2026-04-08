@@ -255,6 +255,24 @@ function generateShareURL(ids, job, reason) {
   if (reason) url.searchParams.set('reason', reason);
   return url.toString();
 }
+const _arrowSVG='<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M3 9h12M11 5l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function buildShareCard(p,idx){
+  const coverSrc=p.cover||null;
+  // Alternate aspect ratios for visual rhythm
+  const ratio=idx%3===1?'3/4':'16/10';
+  const thumb=coverSrc
+    ?'<img src="'+coverSrc+'" class="sc-img">'
+    :'<div class="sc-placeholder">'+( p.emoji||'📁')+'</div>';
+  const tags=(Array.isArray(p.industry)?p.industry:[p.industry]).map(i=>iLabel[i]||i)
+    .concat(p.skills.map(s=>sLabel[s]||s)).join(',\u2009');
+  return '<div class="sc-card" data-id="'+p.id+'">'
+    +'<div class="sc-thumb" style="aspect-ratio:'+ratio+'">'+thumb+'</div>'
+    +'<div class="sc-meta">'
+    +'<div class="sc-title">'+p.title+' '+_arrowSVG+'</div>'
+    +'<div class="sc-tags">'+tags+'</div>'
+    +'</div></div>';
+}
+
 function showSharePage(ids, job, reason) {
   const url = generateShareURL(ids, job, reason);
   history.pushState({}, '', url);
@@ -263,14 +281,16 @@ function showSharePage(ids, job, reason) {
   reasonEl.textContent = reason || '';
   reasonEl.style.display = reason ? 'block' : 'none';
   const matched = projects.filter(p => ids.includes(p.id));
+  const left = matched.filter((_,i)=>i%2===0);
+  const right = matched.filter((_,i)=>i%2===1);
   const grid = document.getElementById('share-cards');
-  grid.innerHTML = matched.map(p => buildCard(p)).join('');
-  grid.querySelectorAll('.work-card').forEach(card => {
-    const img = card.querySelector('.thumb-img');
-    if (img) { img.style.filter='grayscale(1)'; card.addEventListener('mouseenter',()=>img.style.filter='grayscale(0)'); card.addEventListener('mouseleave',()=>img.style.filter='grayscale(1)'); }
-    card.addEventListener('click', () => {
-      const id = parseInt(card.dataset.id);
-      if (projectPDFs[id]||projectPDFUrls[id]) { const proj=projects.find(p=>p.id===id); openPDFModal(id,proj?.title||''); }
+  grid.innerHTML =
+    '<div class="sc-col sc-left">'+left.map((p,i)=>buildShareCard(p,i*2)).join('')+'</div>'
+    +'<div class="sc-col sc-right">'+right.map((p,i)=>buildShareCard(p,i*2+1)).join('')+'</div>';
+  grid.querySelectorAll('.sc-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const id=parseInt(card.dataset.id);
+      if(projectPDFs[id]||projectPDFUrls[id]){const proj=projects.find(p=>p.id===id);openPDFModal(id,proj?.title||'');}
     });
   });
   document.getElementById('share-overlay').style.display = 'block';
