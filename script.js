@@ -145,24 +145,33 @@ document.querySelectorAll('#skill-filter .filter-btn').forEach(btn=>{
 
 const navLinks=document.querySelectorAll('.nav-pill a[href^="#"]');
 const navHomeBtn=document.querySelector('.nav-home-btn');
-// rootMargin '-45% 0px -45% 0px' creates a thin band at the center of the viewport;
-// whichever section is in that band becomes active
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
-      if(navHomeBtn) navHomeBtn.classList.remove('active');
-    }
+
+function setNavActive(id){
+  navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
+  if(navHomeBtn) navHomeBtn.classList.toggle('active',!id);
+}
+
+// Click: set immediately
+navLinks.forEach(a=>{
+  a.addEventListener('click',()=>{
+    const id=a.getAttribute('href').slice(1);
+    setNavActive(id);
   });
-},{rootMargin:'-45% 0px -45% 0px',threshold:0});
-['work','about','contact'].forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
-window.addEventListener('scroll',()=>{
-  if(window.scrollY<100){
-    navLinks.forEach(a=>a.classList.remove('active'));
-    if(navHomeBtn) navHomeBtn.classList.add('active');
-  }
-},{passive:true});
-if(navHomeBtn) navHomeBtn.classList.add('active');
+});
+
+// Scroll: use section top positions
+function updateNavOnScroll(){
+  if(window.scrollY<80){ setNavActive(null); return; }
+  const sections=['work','about'];
+  let current=null;
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.getBoundingClientRect().top<=window.innerHeight*0.45) current=id;
+  });
+  setNavActive(current);
+}
+window.addEventListener('scroll',updateNavOnScroll,{passive:true});
+setNavActive(null); // home active on load
 
 syncFilterUI();
 renderWork();
