@@ -258,15 +258,16 @@ function generateShareURL(ids, job, reason) {
 const _arrowSVG='<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M3 9h12M11 5l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function buildShareCard(p,idx){
   const coverSrc=p.cover||null;
-  // Alternate aspect ratios for visual rhythm
-  const ratio=idx%3===1?'3/4':'16/10';
+  // Alternate portrait/landscape for rhythm
+  const ratios=['16/10','3/4','4/3','3/4'];
+  const ratio=ratios[idx%ratios.length];
   const thumb=coverSrc
     ?'<img src="'+coverSrc+'" class="sc-img">'
-    :'<div class="sc-placeholder">'+( p.emoji||'📁')+'</div>';
+    :'<div class="sc-placeholder">'+(p.emoji||'📁')+'</div>';
   const tags=(Array.isArray(p.industry)?p.industry:[p.industry]).map(i=>iLabel[i]||i)
     .concat(p.skills.map(s=>sLabel[s]||s)).join(',\u2009');
   return '<div class="sc-card" data-id="'+p.id+'">'
-    +'<div class="sc-thumb" style="aspect-ratio:'+ratio+'">'+thumb+'</div>'
+    +'<div class="sc-inner"><div class="sc-thumb" style="aspect-ratio:'+ratio+'">'+thumb+'</div></div>'
     +'<div class="sc-meta">'
     +'<div class="sc-title">'+p.title+' '+_arrowSVG+'</div>'
     +'<div class="sc-tags">'+tags+'</div>'
