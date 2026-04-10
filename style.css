@@ -595,16 +595,13 @@ nav {
   /* min-height injected by JS based on card count */
 }
 
-/* Each card is absolutely placed – position/size/rotate set inline by JS */
+/* Each card is absolutely placed – position/size/rotate/parallax all managed by JS RAF */
 .sc-card {
   position: absolute;
   cursor: pointer;
-  transition: transform .5s cubic-bezier(.25,.46,.45,.94);
+  will-change: transform;   /* hint to compositor – parallax updates every frame */
 }
-.sc-card:hover {
-  transform: rotate(0deg) translateY(-12px) !important;
-  z-index: 20 !important;
-}
+/* box-shadow transition stays in CSS; only transform is JS-driven */
 .sc-card:hover .sc-inner { box-shadow: 0 28px 72px rgba(0,0,0,0.15); }
 
 .sc-inner {
