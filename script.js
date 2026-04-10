@@ -278,19 +278,18 @@ function generateShareURL(ids, job, reason) {
 }
 const _arrowSVG='<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M3 9h12M11 5l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-// Scattered card presets: absolute position + parallax depth (higher = moves more with mouse)
+// Scattered card presets – percentage-based positions spread around viewport edges,
+// leaving the centre clear for the intro text block (approx. 20–80% x, 15–80% y).
 const _scatterPresets = [
-  { top:   0, left: '0%',   width: '61%', rotate: -1.8, z: 1, ratio: '3/2', depth: 0.5 }, // large anchor
-  { top:  40, left: '56%',  width: '36%', rotate:  3.4, z: 3, ratio: '4/3', depth: 2.5 }, // small, top-right
-  { top: 340, left: '3%',   width: '44%', rotate:  1.5, z: 2, ratio: '4/3', depth: 1.0 }, // medium, left
-  { top: 260, left: '48%',  width: '38%', rotate: -2.6, z: 4, ratio: '3/4', depth: 3.5 }, // portrait, right
-  { top: 660, left: '5%',   width: '57%', rotate: -1.0, z: 2, ratio: '3/2', depth: 0.8 }, // large, lower-left
-  { top: 590, left: '58%',  width: '32%', rotate:  2.8, z: 5, ratio: '1/1', depth: 3.0 }, // square, lower-right
-  { top: 980, left: '2%',   width: '46%', rotate:  1.2, z: 3, ratio: '4/3', depth: 1.5 }, // medium, bottom-left
-  { top: 920, left: '50%',  width: '30%', rotate: -3.2, z: 4, ratio: '3/4', depth: 4.0 }, // small portrait
+  { top: '5%',  left: '2%',   width: '22%', rotate: -2.5, z: 2, ratio: '4/3',  depth: 0.8 }, // top-left
+  { top: '3%',  left: '58%',  width: '18%', rotate:  1.8, z: 3, ratio: '1/1',  depth: 2.0 }, // top-center-right
+  { top: '1%',  left: '76%',  width: '21%', rotate:  3.2, z: 2, ratio: '4/3',  depth: 1.5 }, // top-right
+  { top: '36%', left: '0%',   width: '18%', rotate: -3.0, z: 3, ratio: '3/4',  depth: 3.0 }, // left-middle
+  { top: '34%', left: '79%',  width: '20%', rotate:  2.8, z: 3, ratio: '3/4',  depth: 2.5 }, // right-middle
+  { top: '66%', left: '5%',   width: '26%', rotate:  1.5, z: 2, ratio: '16/9', depth: 1.5 }, // bottom-left
+  { top: '64%', left: '72%',  width: '22%', rotate: -2.0, z: 3, ratio: '3/4',  depth: 3.5 }, // bottom-right
+  { top: '70%', left: '42%',  width: '18%', rotate:  2.2, z: 4, ratio: '1/1',  depth: 2.0 }, // bottom-center
 ];
-// min-height per card count so the container is tall enough
-const _scatterMinH = [0, 520, 540, 840, 980, 1190, 1310, 1490, 1530];
 
 function buildShareCard(p, preset){
   const coverSrc=p.cover||null;
@@ -299,8 +298,8 @@ function buildShareCard(p, preset){
     :'<div class="sc-placeholder">'+(p.emoji||'📁')+'</div>';
   const tags=(Array.isArray(p.industry)?p.industry:[p.industry]).map(i=>iLabel[i]||i)
     .concat(p.skills.map(s=>sLabel[s]||s)).join(',\u2009');
-  // position/size inline; transform/z-index managed by parallax RAF
-  const style='top:'+preset.top+'px;left:'+preset.left+';width:'+preset.width
+  // position/size inline (top/left already include %, no px needed); transform/z-index by parallax RAF
+  const style='top:'+preset.top+';left:'+preset.left+';width:'+preset.width
     +';transform:rotate('+preset.rotate+'deg);z-index:'+preset.z;
   return '<div class="sc-card"'
     +' data-id="'+p.id+'"'
@@ -396,8 +395,7 @@ function showSharePage(ids, job, reason) {
   reasonEl.style.display = reason ? 'block' : 'none';
   const matched = projects.filter(p => ids.includes(p.id));
   const grid = document.getElementById('share-cards');
-  const n = Math.min(matched.length, _scatterPresets.length);
-  grid.style.minHeight = (_scatterMinH[n] || 1530) + 'px';
+  // container fills viewport (position:absolute;inset:0) – no min-height needed
   grid.innerHTML = matched.map((p,i)=>buildShareCard(p, _scatterPresets[i%_scatterPresets.length])).join('');
   grid.querySelectorAll('.sc-card').forEach(card=>{
     card.addEventListener('click',()=>{
@@ -407,6 +405,11 @@ function showSharePage(ids, job, reason) {
   });
   initShareParallax();
   document.getElementById('share-overlay').style.display = 'block';
+  // Trigger handwritten CTA animation (adds class after paint so CSS transition fires)
+  requestAnimationFrame(()=>{
+    const wrap = document.querySelector('.share-cta-wrap');
+    if(wrap){ wrap.classList.remove('share-cta-animate'); void wrap.offsetWidth; wrap.classList.add('share-cta-animate'); }
+  });
   window.scrollTo(0, 0);
 }
 function closeShareOverlay() {

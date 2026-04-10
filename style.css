@@ -558,107 +558,206 @@ nav {
 .match-job-input input:focus { opacity: 1; border-bottom-color: var(--dark); }
 
 /* ══════════════════════════════════
-   SHARE OVERLAY
+   SHARE OVERLAY  – dark floating gallery
 ══════════════════════════════════ */
 #share-overlay {
-  position: fixed; inset: 0; background: #f9f9f7;
-  z-index: 9999; overflow-y: auto;
+  position: fixed; inset: 0;
+  background: #0e0e0e;
+  z-index: 9999;
+  overflow: hidden;
 }
-.share-page { max-width: 1200px; margin: 0 auto; padding: 48px 48px 120px; }
+
+/* Full-viewport stage */
+.share-page {
+  position: relative;
+  width: 100%; height: 100vh;
+  overflow: hidden;
+}
+
+/* Floating cards layer – fills viewport, cards placed via absolute presets */
+.share-cards {
+  position: absolute; inset: 0;
+  z-index: 1;
+}
+
+/* Central text block – absolutely centered above cards */
+.share-center {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  text-align: center;
+  width: clamp(260px, 44vw, 520px);
+  pointer-events: none; /* let mouse pass through to card hover/click */
+}
+.share-center > * { pointer-events: auto; }
+
 .share-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 52px;
+  margin-bottom: 36px;
 }
-.share-logo { font-size: 14px; font-weight: 400; color: var(--dark); }
+.share-logo { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.45); }
 .share-copy-btn {
-  border: 1px solid rgba(48,48,48,0.2); background: transparent;
-  color: var(--dark); padding: 6px 16px;
+  border: 1px solid rgba(255,255,255,0.18); background: transparent;
+  color: rgba(255,255,255,0.6); padding: 5px 14px;
   border-radius: 999px;
-  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
   cursor: pointer; transition: background .15s, color .15s, border-color .15s;
 }
-.share-copy-btn:hover { background: var(--dark); color: #fff; border-color: var(--dark); }
-.share-intro { margin-bottom: 12px; }
-.share-greeting { font-size: clamp(22px,3vw,36px); font-weight: 400; margin-bottom: 10px; }
-.share-intro p:last-child { font-size: clamp(18px,2.2vw,28px); font-weight: 400; color: var(--dark); line-height: 1.5; }
+.share-copy-btn:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.4); }
+
+.share-intro { margin-bottom: 20px; }
+.share-greeting {
+  font-size: clamp(28px, 4vw, 52px); font-weight: 400;
+  color: #fff; margin-bottom: 12px;
+}
+.share-intro p:last-child {
+  font-size: clamp(13px, 1.6vw, 20px); font-weight: 400;
+  color: rgba(255,255,255,0.65); line-height: 1.6;
+}
 .share-intro mark {
   background: var(--yellow);
-  color: var(--dark);
-  padding: 0 3px;
+  color: #0e0e0e;
+  padding: 0 4px;
 }
-.share-reason { font-size: 12px; color: var(--dark); opacity: 0.45; font-style: italic; margin-bottom: 36px; }
+.share-reason {
+  font-size: 11px; color: rgba(255,255,255,0.3);
+  font-style: italic; margin-bottom: 16px;
+}
+.share-footer {
+  margin-top: 24px;
+  display: flex; align-items: center; justify-content: center;
+}
 
-/* ── Scattered absolute layout (danielsun.space style) ── */
-.share-cards {
+/* Handwritten-loop CTA (ported from hand-writing-text.tsx) */
+.share-cta-wrap {
   position: relative;
-  margin-top: 48px;
-  /* min-height injected by JS based on card count */
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 12px 24px;
+  color: rgba(255,255,255,0.75);
+  transition: color .2s;
+  user-select: none;
+}
+.share-cta-wrap:hover { color: #fff; }
+
+/* SVG loop drawn behind the text */
+.share-cta-loop {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  overflow: visible;
+  pointer-events: none;
 }
 
-/* Each card is absolutely placed – position/size/rotate/parallax all managed by JS RAF */
+/* Stroke-dasharray animation = pathLength trick from framer-motion's pathLength */
+.share-cta-path {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  opacity: 0;
+  color: rgba(255,255,255,0.35);
+  stroke: currentColor;
+}
+/* Triggered when .share-overlay is shown – class .share-cta-animate added by JS */
+.share-cta-animate .share-cta-path {
+  animation: drawLoop 2.2s cubic-bezier(0.43,0.13,0.23,0.96) 0.4s forwards;
+}
+@keyframes drawLoop {
+  0%   { stroke-dashoffset: 600; opacity: 0; }
+  5%   { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
+.share-cta-main {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(16px, 2.2vw, 26px);
+  font-weight: 400;
+  line-height: 1.2;
+  position: relative; z-index: 1;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: none;
+}
+.share-cta-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(10px, 1.2vw, 13px);
+  color: rgba(255,255,255,0.45);
+  position: relative; z-index: 1;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: none;
+}
+.share-cta-animate .share-cta-main {
+  animation: fadeUpIn .7s ease 0.6s forwards;
+}
+.share-cta-animate .share-cta-sub {
+  animation: fadeUpIn .7s ease 0.9s forwards;
+}
+@keyframes fadeUpIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Floating project cards ── */
 .sc-card {
   position: absolute;
   cursor: pointer;
-  will-change: transform;   /* hint to compositor – parallax updates every frame */
+  will-change: transform;
 }
-/* box-shadow transition stays in CSS; only transform is JS-driven */
-.sc-card:hover .sc-inner { box-shadow: 0 28px 72px rgba(0,0,0,0.15); }
+.sc-card:hover .sc-inner { box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
 
 .sc-inner {
-  background: #fff;
-  border-radius: 24px;
-  padding: 20px;
-  border: 1px solid rgba(0,0,0,0.07);
-  box-shadow: 0 6px 28px rgba(0,0,0,0.08);
+  background: rgba(20, 20, 20, 0.72);
+  border-radius: 16px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.45);
   overflow: hidden;
   transition: box-shadow .5s;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
-/* Thumb – aspect-ratio set inline by JS preset */
 .sc-thumb {
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  background: #f0eeec;
+  background: #1c1c1c;
   width: 100%;
 }
 .sc-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .sc-placeholder {
-  width: 100%; height: 100%; min-height: 160px;
+  width: 100%; height: 100%; min-height: 120px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 52px; opacity: 0.22;
+  font-size: 40px; opacity: 0.18;
 }
 
-.sc-meta { padding: 16px 4px 0; }
+.sc-meta { padding: 9px 4px 3px; }
 .sc-title {
-  font-size: 18px; font-weight: 700;
-  color: var(--dark); line-height: 1.25;
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 4px;
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.82); line-height: 1.3;
+  display: flex; align-items: center; gap: 5px;
+  margin-bottom: 3px;
 }
-.sc-tags { font-size: 11px; color: var(--dark); opacity: 0.4; }
+.sc-title svg { width: 11px !important; height: 11px !important; opacity: 0.5; }
+.sc-tags { font-size: 10px; color: rgba(255,255,255,0.28); }
 
-/* Mobile: collapse to vertical stack, discard all absolute offsets */
+/* Mobile: collapse to scrollable list */
 @media (max-width: 640px) {
+  #share-overlay { overflow-y: auto; }
+  .share-page { height: auto; min-height: 100vh; overflow: visible; }
+  .share-center {
+    position: static; transform: none;
+    padding: 32px 20px 20px; width: 100%; text-align: left;
+  }
   .share-cards {
-    position: static !important;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding-bottom: 60px;
-    min-height: 0 !important;
+    position: static; display: flex;
+    flex-direction: column; gap: 16px; padding: 0 20px 60px;
   }
   .sc-card {
-    position: static !important;
-    width: 100% !important;
-    transform: none !important;
-    z-index: auto !important;
+    position: static !important; width: 100% !important;
+    transform: none !important; z-index: auto !important;
   }
   .sc-thumb { aspect-ratio: 4/3 !important; }
+  .share-footer { justify-content: flex-start; }
 }
-.share-footer { margin-top: 52px; font-size: 14px; color: var(--dark); display: flex; align-items: center; gap: 10px; }
-.share-cta {
-  background: transparent; border: none; color: var(--dark);
-  font-family: 'IBM Plex Mono', monospace; font-size: 14px;
-  cursor: pointer; text-decoration: underline; padding: 0; opacity: 0.7;
-}
-.share-cta:hover { opacity: 1; }
