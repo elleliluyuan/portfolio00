@@ -558,71 +558,62 @@ nav {
 .match-job-input input:focus { opacity: 1; border-bottom-color: var(--dark); }
 
 /* ══════════════════════════════════
-   SHARE OVERLAY  – dark floating gallery
+   SHARE OVERLAY  – white scrollable layout
 ══════════════════════════════════ */
 #share-overlay {
   position: fixed; inset: 0;
-  background: #0e0e0e;
+  background: #f9f9f7;
   z-index: 9999;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
-/* Full-viewport stage */
+/* Scrollable page column */
 .share-page {
   position: relative;
-  width: 100%; height: 100vh;
-  overflow: hidden;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+  box-sizing: border-box;
 }
 
-/* Floating cards layer – fills viewport, cards placed via absolute presets */
+/* Cards container – relative in flow, sized by JS */
 .share-cards {
-  position: absolute; inset: 0;
-  z-index: 1;
+  position: relative;
+  width: 100%;
+  margin: 40px 0;
 }
-
-/* Central text block – absolutely centered above cards */
-.share-center {
-  position: absolute;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 20;
-  text-align: center;
-  width: clamp(260px, 44vw, 520px);
-  pointer-events: none; /* let mouse pass through to card hover/click */
-}
-.share-center > * { pointer-events: auto; }
 
 .share-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 36px;
+  display: flex; align-items: center; justify-content: flex-end;
+  margin-bottom: 40px;
 }
-.share-logo { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.45); }
 .share-copy-btn {
-  border: 1px solid rgba(255,255,255,0.18); background: transparent;
-  color: rgba(255,255,255,0.6); padding: 5px 14px;
+  border: 1px solid rgba(48,48,48,0.2); background: transparent;
+  color: rgba(48,48,48,0.55); padding: 5px 14px;
   border-radius: 999px;
   font-family: 'IBM Plex Mono', monospace; font-size: 11px;
   cursor: pointer; transition: background .15s, color .15s, border-color .15s;
 }
-.share-copy-btn:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.4); }
+.share-copy-btn:hover { background: rgba(48,48,48,0.07); color: var(--dark); border-color: rgba(48,48,48,0.4); }
 
 .share-intro { margin-bottom: 20px; }
 .share-greeting {
   font-size: clamp(28px, 4vw, 52px); font-weight: 400;
-  color: #fff; margin-bottom: 12px;
+  color: var(--dark); margin-bottom: 12px;
 }
 .share-intro p:last-child {
   font-size: clamp(13px, 1.6vw, 20px); font-weight: 400;
-  color: rgba(255,255,255,0.65); line-height: 1.6;
+  color: rgba(48,48,48,0.65); line-height: 1.6;
 }
 .share-intro mark {
   background: var(--yellow);
-  color: #0e0e0e;
+  color: var(--dark);
   padding: 0 4px;
 }
 .share-reason {
-  font-size: 11px; color: rgba(255,255,255,0.3);
-  font-style: italic; margin-bottom: 16px;
+  font-size: 11px; color: rgba(48,48,48,0.35);
+  font-style: italic; margin-bottom: 4px;
 }
 .share-footer {
   margin-top: 24px;
@@ -638,11 +629,11 @@ nav {
   gap: 4px;
   cursor: pointer;
   padding: 12px 24px;
-  color: rgba(255,255,255,0.75);
+  color: rgba(48,48,48,0.7);
   transition: color .2s;
   user-select: none;
 }
-.share-cta-wrap:hover { color: #fff; }
+.share-cta-wrap:hover { color: var(--dark); }
 
 /* SVG loop drawn behind the text */
 .share-cta-loop {
@@ -657,7 +648,7 @@ nav {
   stroke-dasharray: 600;
   stroke-dashoffset: 600;
   opacity: 0;
-  color: rgba(255,255,255,0.35);
+  color: rgba(48,48,48,0.25);
   stroke: currentColor;
 }
 /* Triggered when .share-overlay is shown – class .share-cta-animate added by JS */
@@ -683,7 +674,7 @@ nav {
 .share-cta-sub {
   font-family: 'IBM Plex Mono', monospace;
   font-size: clamp(10px, 1.2vw, 13px);
-  color: rgba(255,255,255,0.45);
+  color: rgba(48,48,48,0.45);
   position: relative; z-index: 1;
   opacity: 0;
   transform: translateY(6px);
@@ -699,65 +690,109 @@ nav {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Floating project cards ── */
-.sc-card {
-  position: absolute;
+/* ── Animated slideshow (ported from animated-slideshow.tsx) ── */
+.sp-slider {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px 48px;
+  padding: 12px 0;
+}
+
+.sp-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 180px;
+}
+
+.sp-title {
   cursor: pointer;
-  will-change: transform;
-}
-.sc-card:hover .sc-inner { box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
-
-.sc-inner {
-  background: rgba(20, 20, 20, 0.72);
-  border-radius: 16px;
-  padding: 8px;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.45);
-  overflow: hidden;
-  transition: box-shadow .5s;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  font-size: clamp(22px, 3.2vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--dark);
+  display: inline-block;
+  line-height: 1.18;
+  user-select: none;
 }
 
-.sc-thumb {
-  border-radius: 10px;
+/* Per-character wrapper – overflow:hidden clips both spans */
+.sp-char-wrap {
+  position: relative;
+  display: inline-block;
   overflow: hidden;
-  background: #1c1c1c;
+  vertical-align: bottom;
+}
+
+/* Outgoing char – visible at low opacity, flies up on active */
+.sp-char-out {
+  display: inline-block;
+  opacity: 0.2;
+  transform: translateY(0%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+/* Incoming char – starts below, slides to position on active */
+.sp-char-in {
+  position: absolute;
+  top: 0; left: 0;
+  display: inline-block;
+  transform: translateY(110%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.sp-title.active .sp-char-out { transform: translateY(-110%); }
+.sp-title.active .sp-char-in  { transform: translateY(0%); }
+
+/* Image column */
+.sp-images {
+  flex: 0 0 auto;
+  width: clamp(200px, 36%, 320px);
+}
+
+/* CSS grid stacks all images on top of each other */
+.sp-img-wrap {
+  display: grid;
   width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #efefed;
 }
-.sc-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.sc-placeholder {
-  width: 100%; height: 100%; min-height: 120px;
+.sp-img-wrap > * {
+  grid-column: 1; grid-row: 1;
+  width: 100%; height: 100%;
+}
+
+/* clip-path slide-in (from animated-slideshow clipPathVariants) */
+.sp-img {
+  object-fit: cover;
+  display: block;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0px);
+  transition: clip-path 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.sp-img.active {
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+.sp-placeholder-img {
   display: flex; align-items: center; justify-content: center;
-  font-size: 40px; opacity: 0.18;
+  font-size: 72px;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0px);
+  transition: clip-path 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.sp-placeholder-img.active {
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
 }
 
-.sc-meta { padding: 9px 4px 3px; }
-.sc-title {
-  font-size: 12px; font-weight: 600;
-  color: rgba(255,255,255,0.82); line-height: 1.3;
-  display: flex; align-items: center; gap: 5px;
-  margin-bottom: 3px;
-}
-.sc-title svg { width: 11px !important; height: 11px !important; opacity: 0.5; }
-.sc-tags { font-size: 10px; color: rgba(255,255,255,0.28); }
-
-/* Mobile: collapse to scrollable list */
+/* Mobile */
 @media (max-width: 640px) {
-  #share-overlay { overflow-y: auto; }
-  .share-page { height: auto; min-height: 100vh; overflow: visible; }
-  .share-center {
-    position: static; transform: none;
-    padding: 32px 20px 20px; width: 100%; text-align: left;
-  }
-  .share-cards {
-    position: static; display: flex;
-    flex-direction: column; gap: 16px; padding: 0 20px 60px;
-  }
-  .sc-card {
-    position: static !important; width: 100% !important;
-    transform: none !important; z-index: auto !important;
-  }
-  .sc-thumb { aspect-ratio: 4/3 !important; }
+  .share-page { padding: 32px 20px 60px; }
+  .sp-slider { flex-direction: column; gap: 24px; }
+  .sp-images { width: 100%; }
+  .sp-img-wrap { aspect-ratio: 4/3; }
+  .sp-title { font-size: clamp(18px, 5vw, 28px); }
   .share-footer { justify-content: flex-start; }
 }

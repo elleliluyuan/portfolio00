@@ -278,112 +278,67 @@ function generateShareURL(ids, job, reason) {
 }
 const _arrowSVG='<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M3 9h12M11 5l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-// Scattered card presets – percentage-based positions spread around viewport edges,
-// leaving the centre clear for the intro text block (approx. 20–80% x, 15–80% y).
-const _scatterPresets = [
-  { top: '5%',  left: '2%',   width: '22%', rotate: -2.5, z: 2, ratio: '4/3',  depth: 0.8 }, // top-left
-  { top: '3%',  left: '58%',  width: '18%', rotate:  1.8, z: 3, ratio: '1/1',  depth: 2.0 }, // top-center-right
-  { top: '1%',  left: '76%',  width: '21%', rotate:  3.2, z: 2, ratio: '4/3',  depth: 1.5 }, // top-right
-  { top: '36%', left: '0%',   width: '18%', rotate: -3.0, z: 3, ratio: '3/4',  depth: 3.0 }, // left-middle
-  { top: '34%', left: '79%',  width: '20%', rotate:  2.8, z: 3, ratio: '3/4',  depth: 2.5 }, // right-middle
-  { top: '66%', left: '5%',   width: '26%', rotate:  1.5, z: 2, ratio: '16/9', depth: 1.5 }, // bottom-left
-  { top: '64%', left: '72%',  width: '22%', rotate: -2.0, z: 3, ratio: '3/4',  depth: 3.5 }, // bottom-right
-  { top: '70%', left: '42%',  width: '18%', rotate:  2.2, z: 4, ratio: '1/1',  depth: 2.0 }, // bottom-center
-];
+// ── Animated slideshow (ported from animated-slideshow.tsx) ─────────────────
 
-function buildShareCard(p, preset){
-  const coverSrc=p.cover||null;
-  const thumb=coverSrc
-    ?'<img src="'+coverSrc+'" class="sc-img">'
-    :'<div class="sc-placeholder">'+(p.emoji||'📁')+'</div>';
-  const tags=(Array.isArray(p.industry)?p.industry:[p.industry]).map(i=>iLabel[i]||i)
-    .concat(p.skills.map(s=>sLabel[s]||s)).join(',\u2009');
-  // position/size inline (top/left already include %, no px needed); transform/z-index by parallax RAF
-  const style='top:'+preset.top+';left:'+preset.left+';width:'+preset.width
-    +';transform:rotate('+preset.rotate+'deg);z-index:'+preset.z;
-  return '<div class="sc-card"'
-    +' data-id="'+p.id+'"'
-    +' data-rotate="'+preset.rotate+'"'
-    +' data-depth="'+preset.depth+'"'
-    +' data-z="'+preset.z+'"'
-    +' style="'+style+'">'
-    +'<div class="sc-inner">'
-    +'<div class="sc-thumb" style="aspect-ratio:'+preset.ratio+'">'+thumb+'</div>'
-    +'<div class="sc-meta">'
-    +'<div class="sc-title">'+p.title+' '+_arrowSVG+'</div>'
-    +'<div class="sc-tags">'+tags+'</div>'
-    +'</div></div></div>';
-}
+function buildShareSlider(matched) {
+  if (!matched.length) return '';
 
-// ── Parallax RAF engine (ported from parallax-floating.tsx) ──────────────────
-let _parallaxRaf = null;
-
-function initShareParallax() {
-  if (_parallaxRaf) { cancelAnimationFrame(_parallaxRaf); _parallaxRaf = null; }
-
-  const overlay = document.getElementById('share-overlay');
-  const cards   = Array.from(document.querySelectorAll('#share-cards .sc-card'));
-  if (!cards.length) return;
-
-  // Mouse position relative to overlay center (starts at 0,0 = no offset)
-  let mouseX = 0, mouseY = 0;
-  const onMove = e => {
-    const r = overlay.getBoundingClientRect();
-    mouseX = e.clientX - r.left - r.width  / 2;
-    mouseY = e.clientY - r.top  - r.height / 2;
-  };
-  // Reset to centre when mouse leaves so cards ease back
-  const onLeave = () => { mouseX = 0; mouseY = 0; };
-  overlay.addEventListener('mousemove', onMove);
-  overlay.addEventListener('mouseleave', onLeave);
-
-  // Per-card mutable state
-  const states = cards.map(el => ({
-    el,
-    depth:       parseFloat(el.dataset.depth || '1'),
-    baseRotate:  parseFloat(el.dataset.rotate || '0'),
-    baseZ:       parseInt(el.dataset.z || '1'),
-    // eased current values
-    cx: 0, cy: 0,          // parallax offset
-    rot: parseFloat(el.dataset.rotate || '0'), // current rotation
-    liftY: 0,              // hover lift
-  }));
-
-  const SENSITIVITY  = -0.5; // negative = opposite direction (depth illusion)
-  const EASE_POS     = 0.06;
-  const EASE_HOVER   = 0.12;
-
-  function tick() {
-    states.forEach(s => {
-      const hovered = s.el.matches(':hover');
-      const strength = (s.depth * SENSITIVITY) / 20;
-
-      // Parallax target
-      const tx = mouseX * strength;
-      const ty = mouseY * strength;
-      s.cx  += (tx - s.cx)  * EASE_POS;
-      s.cy  += (ty - s.cy)  * EASE_POS;
-
-      // Hover: ease rotation → 0°, lift → -20px
-      const targetRot  = hovered ? 0   : s.baseRotate;
-      const targetLift = hovered ? -20 : 0;
-      s.rot   += (targetRot  - s.rot)   * EASE_HOVER;
-      s.liftY += (targetLift - s.liftY) * EASE_HOVER;
-
-      s.el.style.zIndex   = hovered ? '20' : String(s.baseZ);
-      s.el.style.transform =
-        `rotate(${s.rot}deg) translate3d(${s.cx}px,${s.cy + s.liftY}px,0)`;
-    });
-    _parallaxRaf = requestAnimationFrame(tick);
+  // Split title text into character spans with per-char transition-delay
+  function charsHTML(text) {
+    return text.split('').map((ch, ci) => {
+      const delay = (ci * 0.025).toFixed(3) + 's';
+      const display = ch === ' ' ? '&nbsp;' : ch;
+      return '<span class="sp-char-wrap">'
+        + '<span class="sp-char-out" style="transition-delay:' + delay + '">' + display + '</span>'
+        + '<span class="sp-char-in"  style="transition-delay:' + delay + '">' + display + '</span>'
+        + '</span>';
+    }).join('');
   }
 
-  _parallaxRaf = requestAnimationFrame(tick);
+  const titlesHTML = matched.map((p, i) =>
+    '<span class="sp-title' + (i === 0 ? ' active' : '') + '"'
+    + ' data-index="' + i + '" data-id="' + p.id + '">'
+    + charsHTML(p.title)
+    + '</span>'
+  ).join('');
 
-  // Store cleanup so closeShareOverlay can tear down listeners
-  overlay._parallaxCleanup = () => {
-    overlay.removeEventListener('mousemove', onMove);
-    overlay.removeEventListener('mouseleave', onLeave);
-  };
+  const imagesHTML = matched.map((p, i) => {
+    const active = i === 0 ? ' active' : '';
+    if (p.cover) {
+      return '<img class="sp-img' + active + '" data-index="' + i + '"'
+        + ' src="' + p.cover + '" alt="' + p.title + '" loading="eager">';
+    }
+    return '<div class="sp-placeholder-img' + active + '" data-index="' + i + '"'
+      + ' style="background:' + (p.bg || '#f0f0ee') + '">' + (p.emoji || '📁') + '</div>';
+  }).join('');
+
+  return '<div class="sp-slider">'
+    + '<div class="sp-titles">' + titlesHTML + '</div>'
+    + '<div class="sp-images"><div class="sp-img-wrap">' + imagesHTML + '</div></div>'
+    + '</div>';
+}
+
+function initShareSlider(container) {
+  const titles = Array.from(container.querySelectorAll('.sp-title'));
+  const visuals = Array.from(container.querySelectorAll('.sp-img, .sp-placeholder-img'));
+
+  titles.forEach(titleEl => {
+    titleEl.addEventListener('mouseenter', () => {
+      const idx = parseInt(titleEl.dataset.index);
+      titles.forEach(t => t.classList.remove('active'));
+      visuals.forEach(v => v.classList.remove('active'));
+      titleEl.classList.add('active');
+      const activeVisual = visuals.find(v => parseInt(v.dataset.index) === idx);
+      if (activeVisual) activeVisual.classList.add('active');
+    });
+    titleEl.addEventListener('click', () => {
+      const id = parseInt(titleEl.dataset.id);
+      if (projectPDFs[id] || projectPDFUrls[id]) {
+        const proj = projects.find(p => p.id === id);
+        openPDFModal(id, proj ? proj.title : '');
+      }
+    });
+  });
 }
 
 function showSharePage(ids, job, reason) {
@@ -395,15 +350,9 @@ function showSharePage(ids, job, reason) {
   reasonEl.style.display = reason ? 'block' : 'none';
   const matched = projects.filter(p => ids.includes(p.id));
   const grid = document.getElementById('share-cards');
-  // container fills viewport (position:absolute;inset:0) – no min-height needed
-  grid.innerHTML = matched.map((p,i)=>buildShareCard(p, _scatterPresets[i%_scatterPresets.length])).join('');
-  grid.querySelectorAll('.sc-card').forEach(card=>{
-    card.addEventListener('click',()=>{
-      const id=parseInt(card.dataset.id);
-      if(projectPDFs[id]||projectPDFUrls[id]){const proj=projects.find(p=>p.id===id);openPDFModal(id,proj?.title||'');}
-    });
-  });
-  initShareParallax();
+  grid.style.minHeight = '';
+  grid.innerHTML = buildShareSlider(matched);
+  initShareSlider(grid);
   document.getElementById('share-overlay').style.display = 'block';
   // Trigger handwritten CTA animation (adds class after paint so CSS transition fires)
   requestAnimationFrame(()=>{
@@ -413,10 +362,7 @@ function showSharePage(ids, job, reason) {
   window.scrollTo(0, 0);
 }
 function closeShareOverlay() {
-  if (_parallaxRaf) { cancelAnimationFrame(_parallaxRaf); _parallaxRaf = null; }
-  const overlay = document.getElementById('share-overlay');
-  if (overlay._parallaxCleanup) { overlay._parallaxCleanup(); delete overlay._parallaxCleanup; }
-  overlay.style.display = 'none';
+  document.getElementById('share-overlay').style.display = 'none';
   history.pushState({}, '', location.pathname);
 }
 function copyShareLink() {
