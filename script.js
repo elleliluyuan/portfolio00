@@ -145,10 +145,31 @@ document.querySelectorAll('#skill-filter .filter-btn').forEach(btn=>{
 
 const navLinks=document.querySelectorAll('.nav-pill a[href^="#"]');
 const navHomeBtn=document.querySelector('.nav-home-btn');
+const navLimelight=document.getElementById('nav-limelight');
+let _limelightReady=false;
+
+function positionLimelight(el){
+  if(!navLimelight||!el) return;
+  const cx=el.offsetLeft+el.offsetWidth/2;
+  const lw=navLimelight.offsetWidth||44;
+  navLimelight.style.left=(cx-lw/2)+'px';
+  if(!_limelightReady){
+    // delay so initial placement has no slide animation
+    setTimeout(()=>{
+      navLimelight.style.transition='left .35s cubic-bezier(.25,.46,.45,.94)';
+      _limelightReady=true;
+    },60);
+  }
+}
 
 function setNavActive(id){
   navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
   if(navHomeBtn) navHomeBtn.classList.toggle('active',!id);
+  // slide limelight to active item
+  const activeEl=id
+    ?document.querySelector('.nav-pill a[href="#'+id+'"]')
+    :navHomeBtn;
+  positionLimelight(activeEl);
 }
 
 // Click: set immediately
@@ -256,22 +277,38 @@ function generateShareURL(ids, job, reason) {
   return url.toString();
 }
 const _arrowSVG='<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M3 9h12M11 5l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-function buildShareCard(p,idx){
+
+// Scattered card presets: absolute (top px, left %, width %, rotate deg, z-index, thumb aspect-ratio)
+// Designed for a ~1100px wide container. Pairs intentionally overlap.
+const _scatterPresets = [
+  { top:   0, left: '0%',   width: '61%', rotate: -1.8, z: 1, ratio: '3/2'  }, // 0 – large, anchor
+  { top:  40, left: '56%',  width: '36%', rotate:  3.4, z: 3, ratio: '4/3'  }, // 1 – small, top-right
+  { top: 340, left: '3%',   width: '44%', rotate:  1.5, z: 2, ratio: '4/3'  }, // 2 – medium, left
+  { top: 260, left: '48%',  width: '38%', rotate: -2.6, z: 4, ratio: '3/4'  }, // 3 – portrait, right
+  { top: 660, left: '5%',   width: '57%', rotate: -1.0, z: 2, ratio: '3/2'  }, // 4 – large, lower-left
+  { top: 590, left: '58%',  width: '32%', rotate:  2.8, z: 5, ratio: '1/1'  }, // 5 – square, lower-right
+  { top: 980, left: '2%',   width: '46%', rotate:  1.2, z: 3, ratio: '4/3'  }, // 6 – medium, bottom-left
+  { top: 920, left: '50%',  width: '30%', rotate: -3.2, z: 4, ratio: '3/4'  }, // 7 – small portrait, bottom-right
+];
+// min-height per card count so the container is tall enough
+const _scatterMinH = [0, 520, 540, 840, 980, 1190, 1310, 1490, 1530];
+
+function buildShareCard(p, preset){
   const coverSrc=p.cover||null;
-  // Alternate portrait/landscape for rhythm
-  const ratios=['16/10','3/4','4/3','3/4'];
-  const ratio=ratios[idx%ratios.length];
   const thumb=coverSrc
     ?'<img src="'+coverSrc+'" class="sc-img">'
     :'<div class="sc-placeholder">'+(p.emoji||'📁')+'</div>';
   const tags=(Array.isArray(p.industry)?p.industry:[p.industry]).map(i=>iLabel[i]||i)
     .concat(p.skills.map(s=>sLabel[s]||s)).join(',\u2009');
-  return '<div class="sc-card" data-id="'+p.id+'">'
-    +'<div class="sc-inner"><div class="sc-thumb" style="aspect-ratio:'+ratio+'">'+thumb+'</div></div>'
+  const style='top:'+preset.top+'px;left:'+preset.left+';width:'+preset.width
+    +';transform:rotate('+preset.rotate+'deg);z-index:'+preset.z;
+  return '<div class="sc-card" data-id="'+p.id+'" style="'+style+'">'
+    +'<div class="sc-inner">'
+    +'<div class="sc-thumb" style="aspect-ratio:'+preset.ratio+'">'+thumb+'</div>'
     +'<div class="sc-meta">'
     +'<div class="sc-title">'+p.title+' '+_arrowSVG+'</div>'
     +'<div class="sc-tags">'+tags+'</div>'
-    +'</div></div>';
+    +'</div></div></div>';
 }
 
 function showSharePage(ids, job, reason) {
@@ -282,12 +319,10 @@ function showSharePage(ids, job, reason) {
   reasonEl.textContent = reason || '';
   reasonEl.style.display = reason ? 'block' : 'none';
   const matched = projects.filter(p => ids.includes(p.id));
-  const left = matched.filter((_,i)=>i%2===0);
-  const right = matched.filter((_,i)=>i%2===1);
   const grid = document.getElementById('share-cards');
-  grid.innerHTML =
-    '<div class="sc-col sc-left">'+left.map((p,i)=>buildShareCard(p,i*2)).join('')+'</div>'
-    +'<div class="sc-col sc-right">'+right.map((p,i)=>buildShareCard(p,i*2+1)).join('')+'</div>';
+  const n = Math.min(matched.length, _scatterPresets.length);
+  grid.style.minHeight = (_scatterMinH[n] || 1530) + 'px';
+  grid.innerHTML = matched.map((p,i)=>buildShareCard(p, _scatterPresets[i%_scatterPresets.length])).join('');
   grid.querySelectorAll('.sc-card').forEach(card=>{
     card.addEventListener('click',()=>{
       const id=parseInt(card.dataset.id);
