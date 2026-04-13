@@ -1069,7 +1069,6 @@ nav {
   padding: 0;
   border-radius: 0;
   transition: none;
-  overflow: visible;
 }
 .hyper-star {
   color: #7B61FF;
@@ -1077,10 +1076,10 @@ nav {
 }
 .hyper-curve {
   position: absolute;
-  bottom: -4px;
+  bottom: -8px;
   left: 0;
   width: 100%;
-  height: 8px;
+  height: 12px;
   pointer-events: none;
   overflow: visible;
 }
