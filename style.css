@@ -59,7 +59,6 @@ nav {
 }
 .nav-pill a,
 .nav-home-btn,
-.lang-toggle,
 .nav-ai-btn {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 13px;
@@ -78,8 +77,9 @@ nav {
 }
 .nav-pill a:hover,
 .nav-home-btn:hover,
-.lang-toggle:hover,
 .nav-ai-btn:hover { color: var(--dark); text-decoration: none; }
+/* TODO: re-enable language toggle */
+.lang-toggle { display: none; }
 .nav-pill a.active,
 .nav-home-btn.active {
   color: var(--dark);

@@ -120,7 +120,7 @@ function buildGreeting(lang) {
   if (!greetingEl) return;
   const texts = lang === 'en'
     ? { hi: "Hi,", name: "I'm Luyuan!" }
-    : { hi: "Hi，", name: "我是鹿原！" };
+    : { hi: "Hi,", name: "I'm Luyuan!" };
   greetingEl.innerHTML = texts.hi +
     '<img class="hero-photo" src="dog.png" alt="Luyuan" /> ' +
     texts.name;
@@ -195,6 +195,8 @@ function applyLang(lang) {
   try { localStorage.setItem('lang', lang); } catch(e) {}
 }
 
+// TODO: re-enable language toggle
+/*
 function toggleLang() {
   applyLang(currentLang === 'zh' ? 'en' : 'zh');
 }
@@ -206,6 +208,7 @@ function toggleLang() {
     if (saved === 'en') setTimeout(() => applyLang('en'), 50);
   } catch(e) {}
 })();
+*/
 
 // ── PDF DATA ──
 const projectPDFs={get 1(){ return document.getElementById('_pdf1')?.textContent||null; }};
