@@ -21,6 +21,192 @@ let industryState=null, skillState=null;
 function matchIndustry(p){return industryState===null||(Array.isArray(p.industry)?p.industry.some(i=>industryState.has(i)):industryState.has(p.industry));}
 function matchSkill(p){return skillState===null||p.skills.some(s=>skillState.has(s));}
 
+// ═══════════════════════════════════════
+//  I18N / Language Toggle
+// ═══════════════════════════════════════
+let currentLang = 'zh';
+
+const i18n = {
+  zh: {
+    'nav.home': 'Home', 'nav.works': 'Works', 'nav.about': 'About', 'nav.ai_match': 'AI Match',
+    'hero.role': 'Product Designer / Researcher / Vibe Coder',
+    'filter.all': '全部', 'filter.industry.toB': 'B 端', 'filter.industry.toC': 'C 端',
+    'filter.industry.web': 'WEB', 'filter.industry.app': 'APP', 'filter.industry.finance': '金融',
+    'filter.industry.auto': '新能源汽车', 'filter.industry.medical': '医疗',
+    'filter.industry.consume': '消费', 'filter.industry.culture': '文化',
+    'filter.skill.research': '用研', 'filter.skill.system': '设计体系',
+    'filter.skill.competitive': '竞品分析', 'filter.skill.workshop': '共创工作坊',
+    'filter.skill.strategy': '产品策略', 'filter.skill.0-1': '0-1', 'filter.skill.1-10': '设计优化',
+    'filter.clear': '清除',
+    'about.core_skills': '核心能力', 'about.skills.research': '用户研究',
+    'about.skills.usability': '可用性测试', 'about.skills.strategy': '产品策略',
+    'about.skills.service': '服务设计', 'about.skills.ia': '信息架构',
+    'about.skills.ux': 'UX 设计', 'about.skills.ui': 'UI 设计',
+    'about.tools': '工具', 'about.experience': '工作经历',
+    'about.exp1.role': '独立设计师', 'about.exp1.co': '旅居中',
+    'about.exp1.desc': '开展多项设计与咨询实践，涵盖AI产品设计、品牌视觉、移动端应用及出版编辑等领域，积累了跨行业设计经验。',
+    'about.exp2.role': '资深用户体验设计师', 'about.exp2.co': '大邦创新设计咨询 · 上海',
+    'about.exp2.desc': '参与金融、汽车、医疗、消费等多领域策略咨询与全流程设计，关键项目获 UX Design Awards 提名。',
+    'about.exp3.role': '交互设计实习生', 'about.exp3.co': 'Verynice.co · 旧金山',
+    'about.exp3.desc': '参与多个公益项目网站交互设计优化，主持共创工作坊，独立提出交互优化方案。',
+    'about.exp4.role': '交互设计实习生', 'about.exp4.co': '牛津艺术中心 · 牛津',
+    'about.exp4.desc': '独立完成网站设计优化。上线3个月：浏览量 +15%，购票转化率 +200%。',
+    'about.education': '教育背景', 'about.edu1.major': 'MFA · 交互设计',
+    'about.edu2.major': 'BA · 交互媒体研究 · Magna Cum Laude（前5%）',
+    'footer.name': '李鹿原', 'footer.tagline': '产品设计师 · 用研驱动体验策略',
+    'footer.copyright': '© 2026 李鹿原. All rights reserved.', 'footer.wechat': '微信',
+    'modal.title': '匹配 JD', 'modal.manual': '手动选择', 'modal.ai': 'AI 匹配',
+    'modal.job_placeholder': '岗位名称（如：高级产品设计师）',
+    'modal.jd_placeholder': '粘贴职位描述（JD）…',
+    'modal.cancel': '取消', 'modal.share': '生成分享页 →', 'modal.ai_match_btn': 'AI 匹配 →',
+    'share.copy_link': '复制链接', 'share.greeting': 'hi there 😊！',
+    'share.intro_before': '这是李鹿原的作品集，以下是与 ', 'share.intro_after': ' 较为匹配的项目。',
+    'share.job': '该岗位',
+    'share.cta_main': '想看其他作品？', 'share.cta_sub': '看看吧，很有意思的 →',
+    'work.empty': '// 暂无匹配项目',
+  },
+  en: {
+    'nav.home': 'Home', 'nav.works': 'Works', 'nav.about': 'About', 'nav.ai_match': 'AI Match',
+    'hero.role': 'Product Designer / Researcher / Vibe Coder',
+    'filter.all': 'All', 'filter.industry.toB': 'B2B', 'filter.industry.toC': 'B2C',
+    'filter.industry.web': 'WEB', 'filter.industry.app': 'APP', 'filter.industry.finance': 'Finance',
+    'filter.industry.auto': 'EV', 'filter.industry.medical': 'Healthcare',
+    'filter.industry.consume': 'Consumer', 'filter.industry.culture': 'Culture',
+    'filter.skill.research': 'User Research', 'filter.skill.system': 'Design System',
+    'filter.skill.competitive': 'Competitive Analysis', 'filter.skill.workshop': 'Co-Design Workshop',
+    'filter.skill.strategy': 'Product Strategy', 'filter.skill.0-1': '0-1', 'filter.skill.1-10': 'Design Optimization',
+    'filter.clear': 'Clear',
+    'about.core_skills': 'Core Skills', 'about.skills.research': 'User Research',
+    'about.skills.usability': 'Usability Testing', 'about.skills.strategy': 'Product Strategy',
+    'about.skills.service': 'Service Design', 'about.skills.ia': 'Information Architecture',
+    'about.skills.ux': 'UX Design', 'about.skills.ui': 'UI Design',
+    'about.tools': 'Tools', 'about.experience': 'Experience',
+    'about.exp1.role': 'Independent Designer', 'about.exp1.co': 'Freelancing',
+    'about.exp1.desc': 'Leading design and consulting projects across AI product design, brand visual identity, mobile apps, and publishing — building cross-industry expertise.',
+    'about.exp2.role': 'Senior UX Designer', 'about.exp2.co': 'DaBang Innovation Consulting · Shanghai',
+    'about.exp2.desc': 'Delivered strategy consulting and end-to-end design across finance, automotive, healthcare, and consumer sectors. Key project nominated for UX Design Awards.',
+    'about.exp3.role': 'Interaction Design Intern', 'about.exp3.co': 'Verynice.co · San Francisco',
+    'about.exp3.desc': 'Optimized interaction design for non-profit websites, facilitated co-design workshops, and independently proposed UX improvement solutions.',
+    'about.exp4.role': 'Interaction Design Intern', 'about.exp4.co': 'Oxford Art Centre · Oxford',
+    'about.exp4.desc': 'Led website redesign independently. Within 3 months: page views +15%, ticket conversion rate +200%.',
+    'about.education': 'Education', 'about.edu1.major': 'MFA · Interaction Design',
+    'about.edu2.major': 'BA · Interactive Media Studies · Magna Cum Laude (Top 5%)',
+    'footer.name': 'Liyuan Lu', 'footer.tagline': 'Product Designer · Research-driven UX Strategy',
+    'footer.copyright': '© 2026 Liyuan Lu. All rights reserved.', 'footer.wechat': 'WeChat',
+    'modal.title': 'Match JD', 'modal.manual': 'Manual Select', 'modal.ai': 'AI Match',
+    'modal.job_placeholder': 'Job title (e.g. Senior Product Designer)',
+    'modal.jd_placeholder': 'Paste job description (JD)…',
+    'modal.cancel': 'Cancel', 'modal.share': 'Generate Share Page →', 'modal.ai_match_btn': 'AI Match →',
+    'share.copy_link': 'Copy Link', 'share.greeting': 'hi there 😊!',
+    'share.intro_before': "This is Liyuan Lu's portfolio. Here are projects matching ",
+    'share.intro_after': '.',
+    'share.job': 'this role',
+    'share.cta_main': 'Want to see more?', 'share.cta_sub': 'Take a look, it\'s interesting →',
+    'work.empty': '// No matching projects',
+  }
+};
+
+const heroTexts = {
+  zh: '拥有6年全链路体验设计经验，具备跨行业的业务场景积累与快速学习能力。以用户调研与数据分析为设计起点，通过体系化的方法推动产品价值持续增长。',
+  en: 'With 6 years of end-to-end UX experience, building cross-industry expertise and fast learning agility. Starting design from user research and data analysis, systematically driving continuous product value growth.',
+};
+const heroTriggers = {
+  zh: ['全链路', '用户调研', '数据分析', '产品价值持续增长'],
+  en: ['end-to-end', 'user research', 'data analysis', 'continuous product value growth'],
+};
+
+function buildGreeting(lang) {
+  const greetingEl = document.querySelector('.hero-greeting');
+  if (!greetingEl) return;
+  const texts = lang === 'en'
+    ? { hi: "Hi,", name: "I'm Luyuan!" }
+    : { hi: "Hi，", name: "我是鹿原！" };
+  greetingEl.innerHTML = texts.hi +
+    '<img class="hero-photo" src="dog.png" alt="Luyuan" /> ' +
+    texts.name;
+}
+
+function applyLang(lang) {
+  currentLang = lang;
+  const dict = i18n[lang];
+
+  buildGreeting(lang);
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (dict[key]) el.placeholder = dict[key];
+  });
+
+  document.getElementById('lang-btn').textContent = lang === 'zh' ? 'EN' : '中文';
+
+  // Hero text rebuild
+  const bio = heroTexts[lang];
+  window._hyperTriggers = heroTriggers[lang];
+  const container = document.getElementById('hyper-paragraph');
+  if (container && window.makeWordEl) {
+    container.innerHTML = '';
+    const breakPoint = lang === 'en' ? 'agility. ' : '学习能力。';
+    const pointerText = lang === 'en' ? 'continuous product value growth' : '产品价值持续增长';
+    const pointerSvg = '<svg class="ph-cursor" stroke="currentColor" fill="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 16 16" height="24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"></path></svg>';
+    const starWords = ['用户调研', '数据分析'];
+    const lines = bio.split(breakPoint);
+    lines.forEach((line, lineIdx) => {
+      const textToParse = line + (lineIdx < lines.length - 1 ? breakPoint : '');
+      const segments = window.parseBio(textToParse, window._hyperTriggers);
+      segments.forEach(seg => {
+        if (!seg.text) return;
+        const showStar = seg.highlight && starWords.includes(seg.text);
+        const wordEl = window.makeWordEl(seg.text, seg.highlight, showStar);
+        if (seg.highlight && seg.text === pointerText) {
+          const wrapper = document.createElement('span');
+          wrapper.className = 'pointer-highlight';
+          wrapper.innerHTML = '<span class="ph-rect"></span>' + pointerSvg;
+          wrapper.appendChild(wordEl);
+          container.appendChild(wrapper);
+          const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { wrapper.classList.add('in-view'); obs.unobserve(wrapper); } });
+          }, { threshold: 0.5 });
+          obs.observe(wrapper);
+        } else {
+          container.appendChild(wordEl);
+        }
+      });
+      if (lineIdx < lines.length - 1) {
+        container.appendChild(document.createElement('br'));
+      }
+    });
+  }
+
+  const clearBtn = document.getElementById('filter-clear-all');
+  if (clearBtn) clearBtn.textContent = dict['filter.clear'];
+
+  const shareIntro = document.querySelector('.share-intro > p:last-of-type');
+  if (shareIntro) {
+    shareIntro.innerHTML = dict['share.intro_before'] +
+      '<mark id="share-job-name">' + dict['share.job'] + '</mark>' +
+      dict['share.intro_after'];
+  }
+
+  try { localStorage.setItem('lang', lang); } catch(e) {}
+}
+
+function toggleLang() {
+  applyLang(currentLang === 'zh' ? 'en' : 'zh');
+}
+
+// Restore saved language on load
+(function(){
+  try {
+    const saved = localStorage.getItem('lang');
+    if (saved === 'en') setTimeout(() => applyLang('en'), 50);
+  } catch(e) {}
+})();
+
 // ── PDF DATA ──
 const projectPDFs={get 1(){ return document.getElementById('_pdf1')?.textContent||null; }};
 const projectPDFUrls={2:'https://portfolio-pdf-1317896689.cos.ap-guangzhou.myqcloud.com/%E6%9E%81%E6%B0%AA.pdf',3:'https://drive.google.com/file/d/1W5t4AitM9Lu5jnS_cOzdvrCKaLr9Rqrb/preview'};
