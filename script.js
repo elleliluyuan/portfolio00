@@ -275,8 +275,16 @@ document.addEventListener('click',function(e){
   openPDFModal(id,proj?proj.title:'');
 });
 
+function isWeChat(){
+  return /MicroMessenger/i.test(navigator.userAgent);
+}
+
 function openPDFModal(id, title){
   if(projectPDFUrls[id]){
+    if(isWeChat()){
+      showWeChatTip();
+      return;
+    }
     window.open(projectPDFUrls[id], '_blank');
     return;
   }
@@ -287,7 +295,18 @@ function openPDFModal(id, title){
 function closePDFModal(){
   document.getElementById('pdf-modal').classList.remove('open');
   document.getElementById('pdf-iframe').src = '';
-  if(_pdfBlobUrl){ URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null; }
+}
+
+function showWeChatTip(){
+  let tip = document.getElementById('wechat-tip');
+  if(!tip){
+    tip = document.createElement('div');
+    tip.id = 'wechat-tip';
+    tip.innerHTML = '<div class="wechat-tip-content"><div class="wechat-tip-arrow">↗</div><p>点击右上角 <b>···</b></p><p>选择「在浏览器中打开」</p></div>';
+    document.body.appendChild(tip);
+  }
+  tip.style.display = 'block';
+  setTimeout(() => { tip.style.display = 'none'; }, 5000);
 }
 
 function syncFilterUI(){

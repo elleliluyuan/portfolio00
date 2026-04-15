@@ -1532,3 +1532,40 @@ nav {
   .about-left::after { display: none; }
   .about-right { padding: 0; }
 }
+
+/* ══════════════════════════════════
+   WECHAT BROWSER TIP
+══════════════════════════════════ */
+#wechat-tip {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 10000;
+  animation: wechatFadeIn 0.3s ease;
+}
+@keyframes wechatFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.wechat-tip-content {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #fff;
+  color: #333;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  line-height: 1.8;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+.wechat-tip-content p { margin: 0; }
+.wechat-tip-arrow {
+  position: absolute;
+  top: -8px;
+  right: 30px;
+  font-size: 20px;
+  color: #fff;
+}
