@@ -107,7 +107,7 @@ const i18n = {
 };
 
 const heroTexts = {
-  zh: '拥有6年全链路体验设计经验，具备跨行业的业务场景积累与快速学习能力。以用户调研与数据分析为设计起点，通过体系化的方法推动产品价值持续增长。',
+  zh: '拥有5年全链路体验设计经验，具备跨行业的业务场景积累与快速学习能力。以用户调研与数据分析为设计起点，通过体系化的方法推动产品价值持续增长。',
   en: 'With 6 years of end-to-end UX experience, building cross-industry expertise and fast learning agility. Starting design from user research and data analysis, systematically driving continuous product value growth.',
 };
 const heroTriggers = {
@@ -272,34 +272,34 @@ document.addEventListener('click',function(e){
   card.classList.toggle('selected');
   const id=parseInt(card.dataset.id);
   const proj=projects.find(p=>p.id===id);
-  console.log('[card click] id:',id,'has url:',!!projectPDFUrls[id],'title:',proj?proj.title:'?');
   openPDFModal(id,proj?proj.title:'');
 });
 
 let _pdfBlobUrl = null;
 function openPDFModal(id, title){
-  document.getElementById('pdf-modal-title').textContent = title;
-  // Revoke previous blob URL
-  if(_pdfBlobUrl){ URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null; }
-  document.getElementById('pdf-iframe').src = '';
-
   if(projectPDFUrls[id]){
-    // Use blob URL for local PDFs to avoid CORS issues with file://
-    fetch(projectPDFUrls[id])
-      .then(r => {
-        if (!r.ok) throw new Error('fetch failed');
-        return r.blob();
-      })
-      .then(blob => {
-        _pdfBlobUrl = URL.createObjectURL(blob);
-        document.getElementById('pdf-iframe').src = _pdfBlobUrl;
-        document.getElementById('pdf-modal').classList.add('open');
-      })
-      .catch(() => {
-        // Fallback: direct URL (works on http(s) servers)
-        document.getElementById('pdf-iframe').src = projectPDFUrls[id];
-        document.getElementById('pdf-modal').classList.add('open');
-      });
+    // http(s): try fetch → blob → iframe preview
+    if (location.protocol.startsWith('http')) {
+      document.getElementById('pdf-modal-title').textContent = title;
+      if(_pdfBlobUrl){ URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null; }
+      document.getElementById('pdf-iframe').src = '';
+      fetch(projectPDFUrls[id])
+        .then(r => {
+          if (!r.ok) throw new Error('fetch failed');
+          return r.blob();
+        })
+        .then(blob => {
+          _pdfBlobUrl = URL.createObjectURL(blob);
+          document.getElementById('pdf-iframe').src = _pdfBlobUrl;
+          document.getElementById('pdf-modal').classList.add('open');
+        })
+        .catch(() => {
+          window.open(projectPDFUrls[id], '_blank');
+        });
+    } else {
+      // file://: open in new tab
+      window.open(projectPDFUrls[id], '_blank');
+    }
     return;
   }
 
@@ -448,7 +448,7 @@ function generateShareFromManual() {
   if (!checked.length) { alert('请至少选择一个项目'); return; }
   const ids = checked.map(cb => parseInt(cb.value));
   const job = document.getElementById('manual-job-title').value.trim() || '该岗位';
-  showSharePage(ids, job, '');
+  openShareLink(ids, job, '');
   closeMatchModal();
 }
 async function runAIMatch() {
@@ -489,7 +489,7 @@ async function runAIMatch() {
 }
 function generateShareFromAI() {
   if (!_aiMatchData) return;
-  showSharePage(_aiMatchData.matched_ids, _aiMatchData.job_title||'该岗位', _aiMatchData.reason||'');
+  openShareLink(_aiMatchData.matched_ids, _aiMatchData.job_title||'该岗位', _aiMatchData.reason||'');
   closeMatchModal();
 }
 function generateShareURL(ids, job, reason) {
@@ -516,7 +516,7 @@ function buildShareShowcase(matched) {
       .join(' · ');
     const coverSrc = p.cover || null;
     const bg = p.bg || '#efefed';
-    return '<a class="sp-project" data-index="' + i + '" data-id="' + p.id + '">'
+    return '<div class="sp-project" data-index="' + i + '" data-id="' + p.id + '">'
       + '<div class="sp-project-inner">'
       + '<div class="sp-project-bg"></div>'
       + '<div class="sp-project-info">'
@@ -526,8 +526,7 @@ function buildShareShowcase(matched) {
       + '<div class="sp-project-right">'
       + '<span class="sp-project-arrow"></span>'
       + '</div>'
-      + '</div>'
-      + '</a>';
+      + '</div></div>';
   }).join('');
 
   return '<div class="sp-showcase">'
@@ -571,6 +570,7 @@ function initShareShowcase(container, matched, floatEl) {
     });
 
     item.addEventListener('click', (e) => {
+      e.stopPropagation();
       const id = parseInt(item.dataset.id);
       if (projectPDFUrls[id]) {
         const proj = projects.find(p => p.id === id);
@@ -643,9 +643,12 @@ function initCTAMarquee() {
   });
 }
 
-function showSharePage(ids, job, reason) {
+function openShareLink(ids, job, reason) {
   const url = generateShareURL(ids, job, reason);
-  history.pushState({}, '', url);
+  window.open(url, '_blank');
+}
+
+function showSharePage(ids, job, reason) {
   document.getElementById('share-job-name').textContent = job;
   const reasonEl = document.getElementById('share-reason-text');
   reasonEl.textContent = reason || '';
