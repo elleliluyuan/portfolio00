@@ -275,31 +275,9 @@ document.addEventListener('click',function(e){
   openPDFModal(id,proj?proj.title:'');
 });
 
-let _pdfBlobUrl = null;
 function openPDFModal(id, title){
   if(projectPDFUrls[id]){
-    // http(s): try fetch → blob → iframe preview
-    if (location.protocol.startsWith('http')) {
-      document.getElementById('pdf-modal-title').textContent = title;
-      if(_pdfBlobUrl){ URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null; }
-      document.getElementById('pdf-iframe').src = '';
-      fetch(projectPDFUrls[id])
-        .then(r => {
-          if (!r.ok) throw new Error('fetch failed');
-          return r.blob();
-        })
-        .then(blob => {
-          _pdfBlobUrl = URL.createObjectURL(blob);
-          document.getElementById('pdf-iframe').src = _pdfBlobUrl;
-          document.getElementById('pdf-modal').classList.add('open');
-        })
-        .catch(() => {
-          window.open(projectPDFUrls[id], '_blank');
-        });
-    } else {
-      // file://: open in new tab
-      window.open(projectPDFUrls[id], '_blank');
-    }
+    window.open(projectPDFUrls[id], '_blank');
     return;
   }
 
