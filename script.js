@@ -218,8 +218,20 @@ function toggleLang() {
 */
 
 // ── PDF DATA ──
-const projectPDFs={get 1(){ return document.getElementById('_pdf1')?.textContent||null; }};
-const projectPDFUrls={2:'https://portfolio-pdf-1317896689.cos.ap-guangzhou.myqcloud.com/%E6%9E%81%E6%B0%AA.pdf',3:'https://drive.google.com/file/d/1W5t4AitM9Lu5jnS_cOzdvrCKaLr9Rqrb/preview'};
+const projectPDFUrls={
+  1:'./pdfs/%E5%BB%BA%E8%AE%BE%E9%93%B6%E8%A1%8C.pdf',
+  2:'./pdfs/%E6%9E%81%E6%B0%AA.pdf',
+  3:'./pdfs/%E4%B8%AD%E5%9B%BD%E5%8D%AB%E6%98%9F%E7%BD%91%E7%BB%9C.pdf',
+  4:'./pdfs/%E5%B1%B1%E4%B8%9C%E5%9F%8E%E5%95%86%E8%A1%8C%E8%81%94%E7%9B%9F.pdf',
+  5:'./pdfs/%E5%85%A8%E5%9B%BD%E5%B7%A5%E4%BC%9A%E8%81%8C%E5%B7%A5%E4%B9%A6%E5%B1%8B.pdf',
+  6:'./pdfs/%E6%95%B0%E4%BA%91.pdf',
+  7:'./pdfs/%E6%B7%B1%E8%93%9D.pdf',
+  8:'./pdfs/%E7%A1%85%E5%9F%BA.pdf',
+  9:'./pdfs/%E5%AE%9D%E6%AD%A6.pdf',
+  10:'./pdfs/netabrain.pdf',
+  11:'./pdfs/%E6%96%B0%E4%B8%9C%E6%96%B9.pdf',
+  12:'./pdfs/%E6%95%A6%E7%85%8C.pdf'
+};
 
 // Bento grid size map: wide = col-span 2, tall = row-span 2
 const bentoSizes={1:'tall',2:'wide',7:'tall'};
@@ -259,30 +271,40 @@ document.addEventListener('click',function(e){
   if(!card) return;
   card.classList.toggle('selected');
   const id=parseInt(card.dataset.id);
-  console.log('[card click] id:',id,'pdf:',projectPDFs[id]?'✓ found':'none');
-  if(projectPDFs[id]||projectPDFUrls[id]){
-    const proj=projects.find(p=>p.id===id);
-    openPDFModal(id,proj?proj.title:'');
-  }
+  const proj=projects.find(p=>p.id===id);
+  console.log('[card click] id:',id,'has url:',!!projectPDFUrls[id],'title:',proj?proj.title:'?');
+  openPDFModal(id,proj?proj.title:'');
 });
 
 let _pdfBlobUrl = null;
 function openPDFModal(id, title){
   document.getElementById('pdf-modal-title').textContent = title;
+  // Revoke previous blob URL
+  if(_pdfBlobUrl){ URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl=null; }
+  document.getElementById('pdf-iframe').src = '';
+
   if(projectPDFUrls[id]){
-    document.getElementById('pdf-iframe').src = projectPDFUrls[id];
-    document.getElementById('pdf-modal').classList.add('open');
+    // Use blob URL for local PDFs to avoid CORS issues with file://
+    fetch(projectPDFUrls[id])
+      .then(r => {
+        if (!r.ok) throw new Error('fetch failed');
+        return r.blob();
+      })
+      .then(blob => {
+        _pdfBlobUrl = URL.createObjectURL(blob);
+        document.getElementById('pdf-iframe').src = _pdfBlobUrl;
+        document.getElementById('pdf-modal').classList.add('open');
+      })
+      .catch(() => {
+        // Fallback: direct URL (works on http(s) servers)
+        document.getElementById('pdf-iframe').src = projectPDFUrls[id];
+        document.getElementById('pdf-modal').classList.add('open');
+      });
     return;
   }
-  const b64 = (document.getElementById('_pdf'+id)?.textContent||'').trim().replace(/\s/g,''); if(!b64){console.error('no pdf for id',id);return;}
-  const bytes = atob(b64);
-  const arr = new Uint8Array(bytes.length);
-  for(let i=0;i<bytes.length;i++) arr[i]=bytes.charCodeAt(i);
-  const blob = new Blob([arr], {type:'application/pdf'});
-  if(_pdfBlobUrl) URL.revokeObjectURL(_pdfBlobUrl);
-  _pdfBlobUrl = URL.createObjectURL(blob);
-  document.getElementById('pdf-iframe').src = _pdfBlobUrl;
-  document.getElementById('pdf-modal').classList.add('open');
+
+  // No PDF available
+  console.error('no pdf for id', id);
 }
 function closePDFModal(){
   document.getElementById('pdf-modal').classList.remove('open');
@@ -550,7 +572,7 @@ function initShareShowcase(container, matched, floatEl) {
 
     item.addEventListener('click', (e) => {
       const id = parseInt(item.dataset.id);
-      if (projectPDFs[id] || projectPDFUrls[id]) {
+      if (projectPDFUrls[id]) {
         const proj = projects.find(p => p.id === id);
         openPDFModal(id, proj ? proj.title : '');
       }
