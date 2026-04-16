@@ -13,6 +13,7 @@
   --red:  #303030;
   --white: #ffffff;
 }
+html { color-scheme: light; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border: 0; }
 html, body {
@@ -1524,6 +1525,43 @@ nav {
 .edu-major { font-size: 12px; opacity: 0.5; }
 
 @media (max-width: 640px) {
+  /* Force single-column bento grid */
+  .work-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 12px;
+  }
+  .work-card.bento-wide,
+  .work-card.bento-tall {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+  .work-card { min-height: 260px; }
+
+  /* Nav */
+  .nav-pill { gap: 8px !important; padding: 6px 14px !important; }
+  .nav-limelight { display: none !important; }
+  .nav-home-btn, nav a, .nav-ai-btn { font-size: 12px !important; padding: 6px 10px !important; }
+
+  /* Hero */
+  :root { --pad: 20px; }
+  .hero-hyper { padding-top: calc(20px + 36px + 40px); padding-bottom: 24px; }
+  .hero-hyper-grid { background-size: 24px 16px; }
+  .hero-role { font-size: 14px !important; }
+
+  /* Share page */
+  .share-page { padding: 32px 20px 60px; }
+  .share-intro { margin-bottom: 16px; }
+  .share-subtitle { font-size: 16px !important; }
+  .share-greeting { font-size: 28px !important; }
+  .sp-project-tags { display: none; }
+  .share-cta-marquee { width: 180px !important; }
+
+  /* Filters */
+  #industry-filter, #skill-filter { gap: 6px !important; }
+  .filter-btn { font-size: 12px !important; padding: 6px 12px !important; }
+
+  /* Footer */
   .footer-tape-card { padding: 32px 20px; }
   .footer-tape { width: 80px; height: 30px; }
   .footer-tape-left { left: 16px; }
