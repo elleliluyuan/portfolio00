@@ -6,7 +6,6 @@ export default async function handler(req, res) {
   const apiKey = process.env.SILICONFLOW_API_KEY;
 
   console.log('Backend Key Check:', apiKey ? 'Key Found' : 'Key IS MISSING');
-  console.log('Env keys available:', Object.keys(process.env).filter(k => k.includes('SILICON') || k.includes('API')).join(', ') || 'none');
 
   if (!apiKey) {
     return res.status(500).json({ error: 'SILICONFLOW_API_KEY not configured' });
@@ -14,8 +13,11 @@ export default async function handler(req, res) {
 
   let body;
   try {
-    body = await req.json();
+    // Vercel Node.js runtime: req.body may already be parsed, or be a string/buffer
+    const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    body = JSON.parse(rawBody);
   } catch (e) {
+    console.error('Failed to parse body:', e.message);
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
 
