@@ -640,7 +640,7 @@ function openShareLink(ids, job, reason) {
 function showSharePage(ids, job, reason) {
   document.getElementById('share-job-name').textContent = job;
   const reasonEl = document.getElementById('share-reason-text');
-  reasonEl.textContent = reason || '';
+  reasonEl.textContent = reason ? 'AI 匹配总结：' + reason : '';
   reasonEl.style.display = reason ? 'block' : 'none';
   const matched = projects.filter(p => ids.includes(p.id));
   const grid = document.getElementById('share-cards');

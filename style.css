@@ -817,8 +817,10 @@ nav {
   100% { background-size: 100% 100%; }
 }
 .share-reason {
-  font-size: 11px; color: rgba(48,48,48,0.35);
-  font-style: italic; margin-bottom: 4px;
+  font-size: clamp(13px, 1.5vw, 16px);
+  color: rgba(48,48,48,0.55);
+  line-height: 1.7;
+  margin-top: 8px;
 }
 .share-footer {
   margin-top: 60px;
