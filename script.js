@@ -467,10 +467,8 @@ async function runAIMatch() {
       throw new Error(err.error || 'API error');
     }
     _aiMatchData = await res.json();
-    const names = _aiMatchData.matched_ids.map(id => projects.find(p => p.id === id)?.title).filter(Boolean).join('、');
-    resultDiv.textContent = '推荐项目：' + names + '\n匹配原因：' + _aiMatchData.reason;
-    resultDiv.style.display = 'block'; resultDiv.classList.add('visible');
-    document.getElementById('modal-share-btn').classList.add('visible');
+    openShareLink(_aiMatchData.matched_ids, _aiMatchData.job_title||'该岗位', _aiMatchData.reason||'');
+    closeMatchModal();
   } catch(err) {
     resultDiv.textContent = '匹配失败：' + err.message;
     resultDiv.style.display = 'block'; resultDiv.classList.add('visible');
