@@ -456,29 +456,23 @@ async function runAIMatch() {
   runBtn.textContent = '分析中…'; runBtn.disabled = true;
   resultDiv.style.display = 'none'; resultDiv.classList.remove('visible');
   document.getElementById('modal-share-btn').classList.remove('visible');
-  const projectList = projects.map(p => {
-    const ind = Array.isArray(p.industry) ? p.industry.map(i => iLabel[i]||i).join('/') : (iLabel[p.industry]||p.industry);
-    return '['+p.id+'] '+p.title+'（'+ind+'，技能：'+p.skills.map(s=>sLabel[s]||s).join('、')+'）：'+p.desc;
-  }).join('\n');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/match', {
       method: 'POST',
-      headers: {'Content-Type':'application/json','x-api-key':window._anthropicKey||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001', max_tokens: 400,
-        system: '你是帮助招聘方了解候选人作品集的助手。根据JD从项目列表找出最相关的2-3个项目，并从JD提取岗位名称。只输出JSON：{"matched_ids":[1,2],"job_title":"产品设计师","reason":"一句话说明匹配原因"}',
-        messages: [{role:'user', content:'JD：\n'+jd+'\n\n项目列表：\n'+projectList}]
-      })
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ jd })
     });
-    const data = await res.json();
-    const text = data.content.map(c=>c.text||'').join('');
-    _aiMatchData = JSON.parse(text.replace(/```json|```/g,'').trim());
-    const names = _aiMatchData.matched_ids.map(id=>projects.find(p=>p.id===id)?.title).filter(Boolean).join('、');
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'API error');
+    }
+    _aiMatchData = await res.json();
+    const names = _aiMatchData.matched_ids.map(id => projects.find(p => p.id === id)?.title).filter(Boolean).join('、');
     resultDiv.textContent = '推荐项目：' + names + '\n匹配原因：' + _aiMatchData.reason;
     resultDiv.style.display = 'block'; resultDiv.classList.add('visible');
     document.getElementById('modal-share-btn').classList.add('visible');
   } catch(err) {
-    resultDiv.textContent = '匹配失败，请检查网络或稍后重试。';
+    resultDiv.textContent = '匹配失败：' + err.message;
     resultDiv.style.display = 'block'; resultDiv.classList.add('visible');
     _aiMatchData = null;
   }
