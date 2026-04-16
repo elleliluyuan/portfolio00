@@ -1,6 +1,5 @@
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const SILICONFLOW_API_KEY = process.env.SILICONFLOW_API_KEY;
 
-const ALL_INDUSTRIES = ['auto','finance','tech','gov','commerce','media','education','healthcare'];
 const iLabel = {auto:'出行',finance:'金融',tech:'互联网',gov:'政府',commerce:'电商',media:'传媒',education:'教育',healthcare:'医疗健康'};
 const sLabel = {ux:'UX设计',research:'用户研究',strategy:'设计策略',visual:'视觉设计',motion:'动效设计',brand:'品牌设计'};
 
@@ -24,8 +23,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  if (!ANTHROPIC_API_KEY) {
-    return res.status(500).json({ error: 'API key not configured' });
+  if (!SILICONFLOW_API_KEY) {
+    return res.status(500).json({ error: 'SILICONFLOW_API_KEY not configured' });
   }
 
   const { jd } = await req.json();
@@ -39,28 +38,29 @@ export default async function handler(req, res) {
   }).join('\n');
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+        'Authorization': 'Bearer ' + SILICONFLOW_API_KEY,
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'Qwen/Qwen2.5-72B-Instruct',
         max_tokens: 400,
-        system: '你是帮助招聘方了解候选人作品集的助手。根据JD从项目列表找出最相关的2-3个项目，并从JD提取岗位名称。只输出JSON：{"matched_ids":[1,2],"job_title":"产品设计师","reason":"一句话说明匹配原因"}',
-        messages: [{ role: 'user', content: 'JD：\n' + jd + '\n\n项目列表：\n' + projectList }],
+        messages: [
+          { role: 'system', content: '你是帮助招聘方了解候选人作品集的助手。根据JD从项目列表找出最相关的2-3个项目，并从JD提取岗位名称。只输出JSON，不要输出其他文字：{"matched_ids":[1,2],"job_title":"产品设计师","reason":"一句话说明匹配原因"}' },
+          { role: 'user', content: 'JD：\n' + jd + '\n\n项目列表：\n' + projectList },
+        ],
       }),
     });
 
     if (!response.ok) {
       const errText = await response.text();
-      return res.status(response.status).json({ error: 'Anthropic API error: ' + errText });
+      return res.status(response.status).json({ error: 'SiliconFlow API error: ' + errText });
     }
 
     const data = await response.json();
-    const text = data.content.map(c => c.text || '').join('');
+    const text = data.choices[0].message.content;
     const result = JSON.parse(text.replace(/```json|```/g, '').trim());
     return res.status(200).json(result);
   } catch (err) {
