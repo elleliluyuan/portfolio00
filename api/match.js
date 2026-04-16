@@ -1,27 +1,28 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const apiKey = process.env.SILICONFLOW_API_KEY;
 
-  console.log('Backend Key Check:', apiKey ? 'Key Found' : 'Key IS MISSING');
+  console.log('Backend Key Check:', apiKey ? 'Key Found (length=' + (apiKey.length) + ')' : 'Key IS MISSING');
 
   if (!apiKey) {
     return res.status(500).json({ error: 'SILICONFLOW_API_KEY not configured' });
   }
 
-  let body;
+  let jd;
   try {
-    // Vercel Node.js runtime: req.body may already be parsed, or be a string/buffer
-    const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
-    body = JSON.parse(rawBody);
+    if (typeof req.body === 'string') {
+      jd = JSON.parse(req.body).jd;
+    } else if (req.body && typeof req.body === 'object') {
+      jd = req.body.jd;
+    }
   } catch (e) {
     console.error('Failed to parse body:', e.message);
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
 
-  const { jd } = body;
   if (!jd) {
     return res.status(400).json({ error: 'JD text is required' });
   }
@@ -78,4 +79,4 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-}
+};
