@@ -61,7 +61,7 @@ module.exports = async function handler(req, res) {
         model: 'Qwen/Qwen2.5-72B-Instruct',
         max_tokens: 400,
         messages: [
-          { role: 'system', content: '你是帮助招聘方了解候选人作品集的助手。根据JD从项目列表找出最相关的2-3个项目，并从JD提取岗位名称。只输出JSON，不要输出其他文字：{"matched_ids":[1,2],"job_title":"产品设计师","reason":"用2-3句话说明候选人的作品集与该岗位的匹配度，可以写多两句铺满两行"}' },
+          { role: 'system', content: '你是帮助招聘方了解候选人作品集的助手。根据JD从项目列表找出最相关的2-3个项目，并从JD提取岗位名称。只输出JSON，不要输出其他文字：{"matched_ids":[1,2],"job_title":"产品设计师","reason":"用2-3句话概括候选人的整体能力与该岗位的匹配度，不要提及具体项目编号或项目名，语言自然流畅"}' },
           { role: 'user', content: 'JD：\n' + jd + '\n\n项目列表：\n' + projectList },
         ],
       }),
